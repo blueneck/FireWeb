@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "ViewSession";
+}
+
+<h2>ViewSession</h2>
+
+<h2>現在のアクション：@ViewContext.RouteData.Values["action"]</h2>
+
+セッション状態　キー「Drink」の値：@ViewBag.Drink
+
+<ul>
+    <li>@Html.ActionLink("１．ViewSession - セッション状態の値を表示", "ViewSession")</li>
+    <li>@Html.ActionLink("２．InputSession - セッション状態の値を設定", "InputSession")</li>
+    <li>@Html.ActionLink("３．RemoveAll - Session.RemoveAll() を実行", "RemoveAll")</li>
+    <li>@Html.ActionLink("４．Abandon - Session.Abandon() を実行", "Abandon")</li>
+</ul>
+
+
