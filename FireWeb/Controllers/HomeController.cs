@@ -8,6 +8,10 @@ using FireWeb.Models;
 using System.Data;
 using System.Text;
 using System.IO;
+using System.Net;
+using System.Web;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace FireWeb.Controllers
 {
@@ -35,10 +39,35 @@ namespace FireWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(string password, string name, string mail, string remark)
+        public ActionResult Create(string userId , string password, string name, string mail, string remark)
         {
             var sql = new SqlClass();
-            sql.AddUser(password, name, mail, remark);
+            bool flg = false;
+
+            if (sql.IsCheckUserID(userId) == false)
+            {
+                ViewBag.userIdMsg = "既に使われているユーザーIDです";
+                flg = true;
+            }
+
+            if (sql.IsCheckPassword(password))
+            {
+                ViewBag.passwordMsg = "半角英小文字/大文字/数字をそれぞれ1種類以上含む6文字以上にしてください";
+                flg = true;
+            }
+
+            if (sql.IsCheckMailAddress(mail))
+            {
+                ViewBag.mailMsg = "有効なメールアドレスではありません";
+                flg = true;
+            }
+            if (flg)
+            {
+                return View();
+            }
+            
+
+            sql.AddUserData(userId,password, name, mail, remark);
             return RedirectToAction("List", "Home");
         }
 
@@ -47,24 +76,21 @@ namespace FireWeb.Controllers
 
             List<LoginModel> userLists = new List<LoginModel>();
             var sql = new SqlClass();
-            var dt = sql.AgentDataset("select * from user;");
+            var dt = sql.AgentDataset("select * from user order by id desc;");
 
 
             ////もうちょっとスマートにしたい
             foreach (DataRow dr in dt.Select())
             {
-                userLists.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()), password = dr.ItemArray[1].ToString(), name = dr.ItemArray[2].ToString(), mail = dr.ItemArray[3].ToString(), remark = dr.ItemArray[4].ToString() });
-
+                userLists.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()) ,userId = dr.ItemArray[1].ToString(), name = dr.ItemArray[3].ToString(), mail = dr.ItemArray[4].ToString(), remark = dr.ItemArray[5].ToString() });
             }
 
             var groups = userLists
                 .Select((userList, index) => new { userList = userList, Index = index })
                 .GroupBy(entry => entry.Index / 10, entry => entry.userList);
 
-            ViewBag.firstPage = 1;
-            ViewBag.backPage = page - 1;
-            ViewBag.nextPage = page + 1;
-            ViewBag.endPage = groups.Count();
+            ViewBag.NowPage = page;
+            ViewBag.EndPage = groups.Count();
 
             return View(groups.ElementAt(page - 1));
         }
@@ -80,24 +106,20 @@ namespace FireWeb.Controllers
         public ActionResult Edit(int id)
         {
             var sql = new SqlClass();
-            var list = sql.AgentUserSearch(id);
-            return View(list);
+            var list = sql.GetUserData(id);
+            return View(list[0]);
         }
 
         [HttpPost]
-        public ActionResult Edit(int id, string password, string name, string mail, string remark)
+        public ActionResult Edit(int id, string userId,string password, string name, string mail, string remark)
         {
             var sql = new SqlClass();
-            sql.AgentUserEdit(id, password, name, mail, remark);
+            sql.UserDataUpdate(id, userId , password, name, mail, remark);
             return RedirectToAction("List", "Home");
         }
 
-
-
         public ActionResult Delete()
         {
-
-
             return View();
         }
 
@@ -110,11 +132,12 @@ namespace FireWeb.Controllers
             switch (column)
             {
                 case "id":
-                    query = "SELECT * FROM user WHERE id like '%" + arr[0] + "%'";
+                    query = "SELECT * FROM user WHERE userId like '%" + arr[0] + "%'";
                     foreach (string key in arr.Skip(1))
                     {
-                        query = query + " " + searchType + " id like '%" + key + "%'";
+                        query = query + " " + searchType + " userId like '%" + key + "%'";
                     }
+                    query = query + " order by id desc";
                     break;
 
                 case "name":
@@ -123,6 +146,7 @@ namespace FireWeb.Controllers
                     {
                         query = query + " " + searchType + " name like '%" + key + "%'";
                     }
+                    query = query + " order by id desc";
                     break;
 
                 case "mail":
@@ -131,6 +155,7 @@ namespace FireWeb.Controllers
                     {
                         query = query + " " + searchType + " mail like '%" + key + "%'";
                     }
+                    query = query + " order by id desc";
                     break;
             }
 
@@ -140,8 +165,7 @@ namespace FireWeb.Controllers
 
             foreach (DataRow dr in dt.Select())
             {
-                userList.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()), password = dr.ItemArray[1].ToString(), name = dr.ItemArray[2].ToString(), mail = dr.ItemArray[3].ToString(), remark = dr.ItemArray[4].ToString() });
-
+                userList.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()), userId = dr.ItemArray[1].ToString(), name = dr.ItemArray[3].ToString(), mail = dr.ItemArray[4].ToString(), remark = dr.ItemArray[5].ToString() });
             }
 
             return userList;
@@ -157,7 +181,6 @@ namespace FireWeb.Controllers
 
             if (auth == true)
             {
-                //ここでセッション作成
                 return RedirectToAction("List", "Home");
 
             }
@@ -170,73 +193,22 @@ namespace FireWeb.Controllers
         }
 
 
-        public static bool IsValidMailAddress(string address)
+        
+
+        public ActionResult CsvExport()
         {
-            if (string.IsNullOrEmpty(address))
-            {
-                return false;
-            }
-
-            try
-            {
-                System.Net.Mail.MailAddress a =
-                    new System.Net.Mail.MailAddress(address);
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        [HttpGet]
-        public ActionResult ViewSession()
-        {
-            GetSessionValue();
-            return View();
-        }
-
-        [HttpGet]
-        public ActionResult InputSession()
-        {
-            Session["Drink"] = "Coffe";
-
-            GetSessionValue();
-            return View("ViewSession");
-        }
-
-        [HttpGet]
-        public ActionResult RemoveAll()
-        {
-            Session.RemoveAll();
-
-            GetSessionValue();
-            return View("ViewSession");
-        }
-
-        [HttpGet]
-        public ActionResult Abandon()
-        {
-            Session.Abandon();
-            GetSessionValue();
-            return View("ViewSession");
-        }
-
-        private void GetSessionValue()
-        {
-            object drink = Session["Drink"];
-            ViewBag.Drink = drink;
-        }
-
-        public void CsvExport()
-        {
+            var url = @"C:\Users\t-tango\source\repos\FireWeb\FireWeb\tmp\tmp.csv";
+            string tmpfilePath = @"C:\Users\t-tango\source\repos\FireWeb\FireWeb\tmp\tmp.csv";
             string filePath = @"C:\Users\t-tango\Downloads\douwnload.csv";
 
             var sql = new SqlClass();
             var dt = sql.AgentDataset("select * from user;");
-            DataTableToCsv(dt, filePath, true);
+            DataTableToCsv(dt, tmpfilePath, true);
 
+            var client = new WebClient();
+            client.DownloadFile(url, filePath + ".csv");
+
+            return RedirectToAction("List","Home");
 
         }
 
@@ -303,23 +275,33 @@ namespace FireWeb.Controllers
                 }
             }
         }
+        public ActionResult ImportCsv(HttpPostedFileWrapper uploadFile)
+        {
+            string fileName = Guid.NewGuid().ToString("N").Substring(0, 10);
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ExportDownloaded()
-        //{
-        //    // DB からデータ取得
-        //    //var parentList = db.Parents.ToList();
+            if (uploadFile != null)
+            {
+                uploadFile.SaveAs(Server.MapPath("~/tmp/importTmp.csv"));
+            }
 
-        //    //// CSV 内容生成
-        //    //var csvString = CsvService.CreateCsv(parentList);
+            List<string> row = null;
+            var sql = new SqlClass();
 
-        //    //// クライアントにダウンロードさせる形で CSV 出力
-        //    //var fileName = string.Format("マスタデータ_{0}.csv", DateTime.Now.ToString("yyyyMMddHHmmss"));
-        //    //// IE で全角が文字化けするため、ファイル名を UTF-8 でエンコーディング
-        //    //Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}", HttpUtility.UrlEncode(fileName, Encoding.UTF8)));
-        //    //return Content(csvString, "text/csv", Encoding.GetEncoding("Shift_JIS"));
-        //}
+            using (var csv = new CsvReader(Server.MapPath("~/tmp/importTmp.csv")))
+            {
+                while ((row = csv.ReadRow()) != null)
+                {
+                    if (sql.IsCheckUserID(row[1]) == false)
+                    {
+                        sql.AddUserData(row[1], row[2], row[3], row[4], row[5]);
+                    }
+                }
+            }
+
+
+            return RedirectToAction("List", "Home");
+
+        }
     }
 
     public class SqlClass
@@ -367,19 +349,56 @@ namespace FireWeb.Controllers
             return flg;
         }
 
-        public void AddUser(string password, string name, string mail, string remark)
+
+        public bool IsCheckUserID(string userId)
         {
+            userId = MySqlHelper.EscapeString(userId);
+            var query = "select * from user where userId = '" + userId + "';";
+
+            bool flg = false;
+            try
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    con.Open();
+                    var command = new MySqlCommand(query, con);
+                    var reader = command.ExecuteReader();                  
+                    if (reader.Read() != true)
+                    {
+                        flg = true;
+                    }
+                    con.Clone();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return flg;
+        }
+
+        public bool IsCheckPassword(string password)
+        {
+            bool flg = false;
+            bool result = Regex.IsMatch(password , @"^ (?=.*[0 - 9])(?=.*[a - z])(?=.*[A - Z])[0 - 9a - zA - Z\-]{ 6,}$");
+            return flg;
+        }
 
 
+
+        public void AddUserData(string userId ,string password, string name, string mail, string remark)
+        {
+            string msg = "";
             using (var con = new MySqlConnection(connst))
             {
+                userId = MySqlHelper.EscapeString(userId);
                 password = MySqlHelper.EscapeString(password);
-                name = MySqlHelper.EscapeString(name);
                 mail = MySqlHelper.EscapeString(mail);
+                name = MySqlHelper.EscapeString(name);
                 remark = MySqlHelper.EscapeString(remark);
 
                 con.Open();
-                var query = "INSERT INTO user (password,name,mail,remark) VALUES ( '" + password + "', '" + name + "',  '" + mail + "', '" + remark + "');";
+                var query = "INSERT INTO user (userId,password,name,mail,remark) VALUES ( '" + userId + "','" +password + "', '" + name + "',  '" + mail + "', '" + remark + "');";
                 var command = new MySqlCommand(query, con);
                 command.ExecuteNonQuery();
                 con.Clone();
@@ -387,23 +406,27 @@ namespace FireWeb.Controllers
 
         }
 
-        public void AgentUserEdit(int id, string password, string name, string mail, string remark)
+        public void UserDataUpdate(int id, string userId, string password, string name, string mail, string remark)
         {
             using (var con = new MySqlConnection(connst))
             {
+                userId = MySqlHelper.EscapeString(userId);
                 password = MySqlHelper.EscapeString(password);
                 name = MySqlHelper.EscapeString(name);
                 mail = MySqlHelper.EscapeString(mail);
                 remark = MySqlHelper.EscapeString(remark);
 
-                var query = "UPDATE user SET password = '" + password + "', name = '" + name + "', mail = '" + mail + "', remark = '" + remark + "' WHERE id = " + id.ToString() + ";";
+                con.Open();
+                var query = "UPDATE user SET userId = '" + userId + "', password = '" + password + "', name = '" + name + "', mail = '" + mail + "', remark = '" + remark + "' WHERE id = " + id.ToString() + ";";
                 var command = new MySqlCommand(query, con);
+                command.ExecuteNonQuery();
+                con.Clone();
             }
         }
 
 
 
-        public List<LoginModel> AgentUserSearch(int id)
+        public List<LoginModel> GetUserData(int id)
         {
 
             var list = new List<LoginModel>();
@@ -416,7 +439,7 @@ namespace FireWeb.Controllers
                 var reader = command.ExecuteReader();
                 while (reader.Read() == true)
                 {
-                    list.Add(new LoginModel { id = int.Parse(reader["id"].ToString()), name = reader["name"].ToString(), password = reader["password"].ToString(), mail = reader["mail"].ToString(), remark = reader["remark"].ToString() });
+                    list.Add(new LoginModel { id = int.Parse(reader["id"].ToString()), userId = reader["userId"].ToString(), name = reader["name"].ToString(), password = reader["password"].ToString(), mail = reader["mail"].ToString(), remark = reader["remark"].ToString() });
 
                 }
                 con.Clone();
@@ -424,7 +447,179 @@ namespace FireWeb.Controllers
             return list;
         }
 
+        public bool IsCheckMailAddress(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                return false;
+            }
+
+            try
+            {
+                System.Net.Mail.MailAddress a =
+                    new System.Net.Mail.MailAddress(address);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        
 
 
+    }
+
+
+    public class CsvReader : IDisposable
+    {        
+        private StreamReader stream = null;
+        private bool isQuotedField = false;
+        public CsvReader(string path) :
+            this(path, Encoding.Default)
+        {
+        }
+        public CsvReader(string path, Encoding encoding)
+        {
+            this.stream = new StreamReader(path, encoding);
+        }
+
+        public CsvReader(Stream stream)
+        {
+            this.stream = new StreamReader(stream);
+        }
+
+        public CsvReader(StringBuilder data)
+        {
+            var buffer = Encoding.Unicode.GetBytes(data.ToString());
+            var memory = new MemoryStream(buffer);
+            this.stream = new StreamReader(memory);
+        }
+
+        public List<List<string>> ReadToEnd()
+        {
+            var data = new List<List<string>>();
+            var record = new List<string>();
+
+            while ((record = this.ReadRow()) != null)
+            {
+                data.Add(record);
+            }
+
+            return data;
+        }
+
+        public Task<List<List<string>>> ReadToEndAsync()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                return this.ReadToEnd();
+            });
+        }
+
+        public List<string> ReadRow()
+        {
+            var file = this.stream;
+            var line = string.Empty;
+            var record = new List<string>();
+            var field = new StringBuilder();
+
+            while ((line = file.ReadLine()) != null)
+            {
+                for (var i = 0; i < line.Length; i++)
+                {
+                    var item = line[i];
+
+                    if (item == ',' && !this.isQuotedField)
+                    {
+                        record.Add(field.ToString());
+                        field.Clear();
+                    }
+                    else if (item == '"')
+                    {
+                        if (!this.isQuotedField)
+                        {
+                            if (field.Length == 0)
+                            {
+                                this.isQuotedField = true;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            if (i + 1 >= line.Length)
+                            {
+                                this.isQuotedField = false;
+                                continue;
+                            }
+                        }
+
+                        var peek = line[i + 1];
+
+                        if (peek == '"')
+                        {
+                            field.Append('"');
+                            i += 1;
+                        }
+                        else if (peek == ',' && this.isQuotedField)
+                        {
+                            this.isQuotedField = false;
+                            i += 1;
+                            record.Add(field.ToString());
+                            field.Clear();
+                        }
+                    }
+                    else
+                    {
+                        field.Append(item);
+                    }
+                }
+
+                if (this.isQuotedField)
+                {
+                    field.Append(Environment.NewLine);
+                }
+                else
+                {
+                    record.Add(field.ToString());
+
+                    return record;
+                }
+            }
+
+            return null;
+        }
+
+        public Task<List<string>> ReadRowAsync()
+        {
+            return Task.Factory.StartNew<List<string>>(() =>
+            {
+                return this.ReadRow();
+            });
+        }
+
+        public void Close()
+        {
+            if (this.stream == null)
+            {
+                return;
+            }
+
+            this.stream.Close();
+        }
+
+        public void Dispose()
+        {
+            if (this.stream == null)
+            {
+                return;
+            }
+
+            this.stream.Close();
+            this.stream.Dispose();
+            this.stream = null;
+        }
     }
 }

@@ -4,33 +4,49 @@
     ViewBag.Title = "List";
 }
 
-<h2>List</h2>
+<h2>ユーザー 一覧</h2>
 
-<div style="display:inline-block;width:50%;margin-bottom:10px">
-    @using (Html.BeginForm("Post", "Home/List", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <select name="column"> <option value="id">ID</option><option value="name">ユーザー名</option><option value="mail">メールアドレス</option></select>
-        <input class="form-control text-box single-line" id="name" name="keyword" type="text" value="@Session["Searchword"]" style="display:inline-block">
-        <input type="submit" value="Search" class="btn btn-default" style="display:inline-block">
-        <input type="radio" id="andSearch" value="AND" name="searchType" checked><label for="andSearch">AND</label>
-        <input type="radio" id="orSearch" value="OR" name="searchType"><label for="orSearch">OR</label>
-
-    }
-    @using (Html.BeginForm("Post", "Home/Create", FormMethod.Post))
-    {
-        <input type="submit" value="Create" class="btn btn-default" onClick="window.open('/Home/Create')" style="display:inline-block;margin-left:30px;">
-    }
-    @using (Html.BeginForm("Post", "Home/CsvExport", FormMethod.Post))
-    {
-        <input type="submit" value="CsvExport" class="btn btn-default" style="display:inline-block;margin-left:30px;">
-    }
-
-
+<div style="margin-bottom:10px">
+    <div class="listOptions">
+        @using (Html.BeginForm("List", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <select name="column" class="navbar-default" style="height:30px;"> <option value="id">ID</option><option value="name">ユーザー名</option><option value="mail">メールアドレス</option></select>
+            <input class="form-control text-box single-line" id="name" name="keyword" type="text" value="@Session["Searchword"]" style="display:inline-block">
+            <input type="submit" value="Search" class="btn btn-default" style="position:relative;Display:inline-block">
+            <p style="display:inline-block; width:50px;">
+                <input type="radio" id="andSearch" value="AND" name="searchType" checked><label for="andSearch">AND</label>
+            </p>
+            <p style="display:inline-block; width:50px;">
+                <input type="radio" id="orSearch" value="OR" name="searchType"><label for="orSearch">OR</label>
+            </p>
+        }
     </div>
+    <div class="listOptions">       
+            <input type="submit" value="Create" class="btn btn-default" onClick="window.open('/Home/Create')" style="display:inline-block;">
+    </div>
+    <div class="listOptions">
+        @using (Html.BeginForm("CsvExport", "Home", FormMethod.Post))
+        {
+            <input type="submit" value="CsvExport" class="btn btn-default" style="display:inline-block;">
+        }
+    </div>
+    <div class="listOptions">
+        @using (Html.BeginForm("ImportCsv", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input id="lefile" type="file" style="display:none" name="uploadFile">
+            <input type="submit" value="ImportCSV" class="btn btn-default" style="display:inline-block;"><h3 style="color:red">@ViewBag.Error</h3>
+            <div class="input-group" style="width:320px">
+                <input type="text" id="photoCover" class="form-control" placeholder="select file...">
+                <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=lefile]').click();"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button></span>
+            </div>
+
+        }
+    </div>
+</div>
 <table class="table">
     <tr>
         <th>
-            パスワード
+            ユーザーID
         </th>
         <th>
             ユーザー名
@@ -44,11 +60,12 @@
         <th></th>
     </tr>
 
-@foreach (var item in 
-    Model) {
+    @foreach (var item in
+    Model)
+    {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.password)
+            @Html.DisplayFor(modelItem => item.userId)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.name)
@@ -60,17 +77,35 @@
             @Html.DisplayFor(modelItem => item.remark)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.id })
         </td>
+        <tb hidden>
+            @Html.DisplayFor(modelItem => item.id)
+        </tb>
     </tr>
-}
+    }
 
 </table>
 
 <div>
-        <input type="submit" value="先頭" class="btn btn-default" onclick="location.href='/Home/List/@ViewBag.firstPage'" style="display:inline-block;margin-left:30px;">
-        <input type="submit" value="前へ" class="btn btn-default" onclick="location.href='/Home/List/@ViewBag.backPage'" style="display:inline-block;margin-left:30px;">
-        <input type="submit" value="次へ" class="btn btn-default" onclick="location.href='/Home/List/@ViewBag.nextPage'" style="display:inline-block;margin-left:30px;">
-        <input type="submit" value="最終" class="btn btn-default" onclick="location.href='/Home/List/@ViewBag.endPage'" style="display:inline-block;margin-left:30px;">
-    </div>
+    <input type="submit" value="先頭" class="btn btn-default" onclick="location.href='/Home/List/1'" style="display:inline-block;margin-left:30px;">
+    @if (ViewBag.NowPage == 1)
+    {<input type="submit" value="前へ" class="btn btn-default" disabled style="display:inline-block;margin-left:30px;">}
+    else
+    {<input type="submit" value="前へ" class="btn btn-default" onclick="location.href='/Home/List/@(ViewBag.NowPage - 1) '" style="display:inline-block;margin-left:30px;">}
+    @if (ViewBag.NowPage == ViewBag.EndPage)
+    {<input type="submit" value="次へ" class="btn btn-default" disabled style="display:inline-block;margin-left:30px;">}
+    else
+    {<input type="submit" value="次へ" class="btn btn-default" onclick="location.href='/Home/List/@(ViewBag.NowPage + 1)'" style="display:inline-block;margin-left:30px;">}
+    <input type="submit" value="最終" class="btn btn-default" onclick="location.href='/Home/List/@ViewBag.EndPage'" style="display:inline-block;margin-left:30px;">
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $('input[id=lefile]').change(function () {
+        $('#photoCover').val($(this).val().replace("C:\\fakepath\\", ""));
+    });
+</script>
