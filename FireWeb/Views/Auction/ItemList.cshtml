@@ -40,7 +40,7 @@
                             <input type="radio" class="SearchTeam" value="AND" name="searchType" checked><label class="con_label" for="andSearch">AND</label>
                         </p>
                         <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="OR" name="searchType" ><label for="orSearch" class="con_label">OR</label>
+                            <input type="radio" class="SearchTeam" value="OR" name="searchType"><label for="orSearch" class="con_label">OR</label>
                         </p>
                     </div>
                     <label class="control-label col-md-10"><h4>商品ステータス</h4></label>
@@ -74,17 +74,20 @@
 
         <div style="margin-top:50px;">
             <div class="row">
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="@Html.DisplayNameFor(model => model.BytePicture[0])" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px"> @Html.DisplayNameFor(model => model.Title)</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;"> @Html.DisplayNameFor(model => model.NowPrice)</span><span style="font-size:12px">  (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;"> </span></div>
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-3" style="height:500px;margin:0">
+                        <div class="AucItem">
+                            <img src="@Html.DisplayFor(modelItem => item.BytePicture[0])" style="margin:2px;height:290px;width:290px;">
+                            <div class="itemList-info">
+                                <h3 style="height:35px"> @Html.DisplayFor(modelItem => item.Title)</h3>
+                                <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                                <p><span style="font-weight:600;font-size:30px;margin-left:80px;"> @Html.DisplayFor(modelItem => item.NowPrice)</span><span style="font-size:12px">  (税・送料込み)</span><p>
+                                    <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;"> </span></div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
                 <div class="col-md-3" style="height:500px;margin:0">
                     <div class="AucItem">
                         <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
