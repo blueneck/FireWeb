@@ -1,4 +1,4 @@
-/* NUGET: BEGIN LICENSE TEXT
+﻿/* NUGET: BEGIN LICENSE TEXT
  *
  * Microsoft grants you the right to use these script files for the sole
  * purpose of either: (i) interacting through your browser with the Microsoft
@@ -38,22 +38,50 @@ summary {
 
 
 
+
+
 .listOptions{
     position:relative;
     display:inline-block;
 }
 
-
-
-
-
-
-
-audio,
-canvas,
-video {
-  display: inline-block;
+textarea {
+    resize: none;
+    width: 1500px;
+    height: 500px;
+    border-radius: 5px;
+    border-color:#bbb;
+    max-width:500px;
 }
+
+#Title{
+    width:500px;
+    height:40px;
+}
+
+form-control text-box single-line {
+    width: 500px;
+}
+
+
+button.cp_btn {
+    position: relative;
+    display: block;
+    width: 600px;
+    height:70px;
+    padding: 0.8em;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background: #EC407A;
+    border: 1px solid #fff;
+    overflow: hidden;
+    margin:50px 0 50px 200px ;
+}
+
+
+
+
 
 audio:not([controls]) {
   display: none;

@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color: #f5f5f5
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -17,8 +18,82 @@
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+
+th {
+    background-color: #f5f5f5;
+    text-align: center;
+    vertical-align: middle;
+}
+
+tbody {
+    text-align: center;
+    vertical-align: middle;
+}
+
+container body-content {
+}
+
+.AucItem {
+    background-color: #fff;
+    margin: 10px 0 10px 0;
+    height: 480px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .AucItem h4 {
+        font-size: 20px;
+    }
+
+    .AucItem h3 {
+        height: 3.6em; /* 2em（行）x line-heightの1.8 */
+        font-size: 16px;
+        line-height: 1.8;        
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+mg {
+    height: 450px;
+}
+
+.itemList-info {
+    margin: 10px;
+}
+
+.btnnn {
+    display: inline-block;
+    text-decoration: none;
+    background: #666;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    line-height: 42px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: .4s;
+    font-size:30px;
+    font-weight:600;
+}
+
+    .btnnn:hover {
+        background: #222;
+    }
+
+.SearchTeam {
+    height: 20px;
+    width: 20px;
+}
+
+.SearchStatus {
+    height: 20px;
+    width: 20px;
+}
+.con_label {
+    font-size: 17px;
+    margin-left: 10px;
 }

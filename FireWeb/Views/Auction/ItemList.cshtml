@@ -1,0 +1,301 @@
+﻿@model IEnumerable<FireWeb.Models.ItemModel>
+
+@{
+    ViewBag.Title = "ItemListView";
+}
+
+
+
+
+
+<div class="container" style="width:1300px;max-width:1500px;">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:40px;"><img src="" style="height:100px;width:100px;margin:60px" />Fire Auction</h1>
+        </div>
+
+        @using (Html.BeginForm("List", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="row" style="margin-top:80px">
+                <div class="col-md-8 col-md-offset-2" style="height:80px;padding-left:0px">
+                    <div class="col-md-3" style="padding-left:0;padding-right:5px">
+                        <select name="column" class="navbar-default" style="height:40px;width:100%"> <option value="all">全て</option><option value="Category">カテゴリー</option><option value="Title">タイトル</option><option value="Name">ユーザー名</option><option value="Detail">詳細</option></select>
+                    </div>
+                    <div class="col-md-6" style="padding:0;">
+                        <input class="form-control text-box single-line" id="name" name="keyword" type="text" value="@Session["Searchword"]" style="display:inline-block;width:100%;height:40px;font-size:18px">
+                    </div>
+                    <div class="col-md-1" style="height:40px;padding-left:5px">
+                        <input type="submit" value="Search" class="btn btn-default" style="position:relative;Display:inline-block;height:40px">
+                    </div>
+                    <div class="col-md-2">
+                        <span onclick="dispOption(0)" class="btnnn">+</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="disp" style="display:none">
+                <div class="col-md-8 col-md-offset-2">
+                    <label class="control-label col-md-10"><h4>検索条件</h4></label>
+                    <div class="col-md-10">
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="AND" name="searchType" checked><label class="con_label" for="andSearch">AND</label>
+                        </p>
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="OR" name="searchType" ><label for="orSearch" class="con_label">OR</label>
+                        </p>
+                    </div>
+                    <label class="control-label col-md-10"><h4>商品ステータス</h4></label>
+                    <div class="col-md-10">
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="AND" name="searchStatus" checked><label for="andSearch" class="con_label">全て</label>
+                        </p>
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="OR" name="searchStatus"><label for="orSearch" class="con_label">出品中</label>
+                        </p>
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="OR" name="searchStatus"><label for="orSearch" class="con_label">売却済み</label>
+                        </p>
+                    </div>
+                    <label class="control-label col-md-10"><h4>ユーザー商品ステータス</h4></label>
+                    <div class="col-md-10">
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="AND" name="searchU" checked><label for="andSearch" class="con_label">全て</label>
+                        </p>
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="OR" name="searchU"><label for="orSearch" class="con_label">出品中</label>
+                        </p>
+                        <p style="display:inline-block; width:100px;">
+                            <input type="radio" class="SearchTeam" value="OR" name="searchU"><label for="orSearch" class="con_label">売却済み</label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <div style="margin-top:50px;">
+            <div class="row">
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="@Html.DisplayNameFor(model => model.BytePicture[0])" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px"> @Html.DisplayNameFor(model => model.Title)</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;"> @Html.DisplayNameFor(model => model.NowPrice)</span><span style="font-size:12px">  (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;"> </span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px">  (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/photos/m378692484_1.jpg?1453129623" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m53676817652_1.jpg?1527081230" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m83275125151_1.jpg?1527158590" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m67618830753_1.jpg?1526899013" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div><div class="col-md-3" style="height:500px;margin:0">
+                    <div class="AucItem">
+                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function dispOption(num) {
+        if (num == 0) {
+            document.getElementById("disp").style.display = "block";
+        }
+        else {
+            document.getElementById("disp").style.display = "none";
+        }
+    }
+</script>
+
+
+
+
+
+
+@*<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Owner)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Detail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NowPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SokketsuPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Detail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NowPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SokketsuPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>*@
+
+@*</table>*@
