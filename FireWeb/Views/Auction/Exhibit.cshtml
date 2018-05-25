@@ -47,7 +47,7 @@
                 <!-- 3.表示するスライドのコンテンツ -->
                 <div class="carousel-inner" role="listbox">
                     <div class="item active">
-                        <img src="https://pbs.twimg.com/profile_images/378800000220029324/fe66faeca20115da8566e51d83447ead_400x400.jpeg" style="margin:0;height:500px;width:500px;">
+                        <img id="img1" style="margin:0;height:500px;width:500px;">
                     </div>
                     <div class="item">
                         <img src="https://pbs.twimg.com/profile_images/3406268893/54b7e1f981b7df7c817af48d1b96ad5e_400x400.jpeg" style="margin:0;height:500px;width:500px;">
@@ -101,8 +101,8 @@
         <div class="form-group" style="margin-top:30px;">
             <label class="control-label col-md-2">終了時間</label>
             <div class="col-md-10" style="width:250px;">
-                @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                @*@Html.EditorFor(model => model.ttt, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ttt, "", new { @class = "text-danger" })*@
             </div>
 
             <label class="control-label col-md-2" style="margin-left:20px;">期間：</label>

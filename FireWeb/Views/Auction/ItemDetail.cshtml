@@ -1,9 +1,9 @@
-﻿@model FireWeb.Models.ItemModel
+﻿@model List<FireWeb.Models.ItemModel>
 
 <div class="container">
     <div class="col-md-10 col-md-offset-1" style="background-color:#fff;margin-top:50px;">
         <div class="row" style="height:auto;margin:20px auto 20px auto">
-            <h3 style="font-weight:600;font-size:x-large">@ViewBag.Title【STUDIOUS】ラムレザーダブルライダースブルゾン</h3>
+            <h3 style="font-weight:600;font-size:x-large">@ViewBag.Title</h3>
         </div>
         <div class="row" style="">
             <div class="col-md-7">
@@ -38,31 +38,31 @@
                 <table class="table table-bordered" style="height:300px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
                     <tr>
                         <th>出品者</th>
-                        <td>@ViewBag.Owner たんご</td>
+                        <td>@ViewBag.Owner</td>
                     </tr>
                     <tr>
                         <th>カテゴリー</th>
-                        <td>@ViewBag.Category  メンズ</td>
+                        <td>@ViewBag.Category</td>
                     </tr>
                     <tr>
                         <th>状態</th>
-                        <td>@ViewBag.Value 美品</td>
+                        <td>@ViewBag.Value</td>
                     </tr>
                     <tr>
                         <th>開始価格</th>
-                        <td>@ViewBag.StartPrice 3000円</td>
+                        <td>@ViewBag.StartPrice</td>
                     </tr>
                     <tr>
                         <th>即決価格</th>
-                        <td>@ViewBag.DecidePrice 5000円</td>
+                        <td>@ViewBag.DecidePrice</td>
                     </tr>
                     <tr>
                         <th>開始日時</th>
-                        <td>@ViewBag.StartDate 2018-05-20</td>
+                        <td>@ViewBag.StartDate</td>
                     </tr>
                     <tr>
                         <th>終了日時</th>
-                        <td>@ViewBag.EndDate 2018-05-27</td>
+                        <td>@ViewBag.EndDate</td>
                     </tr>
                 </table>
                 <table class="table table-bordered" style="height:165px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
@@ -71,8 +71,8 @@
                         <th>残り時間</th>
                     </tr>
                     <tr style="font-size:40px;font-weight:600">
-                        <td style="vertical-align:middle">@ViewBag.Count 9</td>
-                        <td style="vertical-align:middle">@ViewBag.TimeLimit 10:56:30</td>
+                        <td style="vertical-align:middle">@ViewBag.Count</td>
+                        <td style="vertical-align:middle">@ViewBag.TimeLimit</td>
                     </tr>
                 </table>
             </div>
@@ -80,7 +80,7 @@
         <div class="row" style="text-align: center;vertical-align: middle;">
             <div class="now_price" style="text-align: center;vertical-align: middle;margin-top:50px">
                 <span style="text-align: center;vertical-align: middle;font-size:30px;">【現在価格】</span>
-                <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@ViewBag.NowPrice 4500円</span><span style="vertical-align:bottom" ;>(税・送料込み)</span>
+                <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@ViewBag.NowPrice</span><span style="vertical-align:bottom" ;>(税・送料込み)</span>
             </div>
         </div>
         <div class="row" style="height:auto">
@@ -95,13 +95,6 @@
             <div class="col-md-10 col-md-offset-1" style="margin-bottom:70px">
                 <p style="font-size:20px">
                     @ViewBag.Detail
-                    BEAUTY & YOUTH UNITED ARROWS<br>
-                    しなやかでソフトな質感のライダースジャケット<br>
-                    ■羊革を用いたライダースジャケット。 <br>
-                    シンプルなシングルライダースなので、コーティネートもしやすく万能なアイテムです。 <br>
-                    着込むほどに革が馴染み、柔らかく変化していくのも魅力。 <br>
-                    シルエットはすっきりとタイトで、<br>
-                    スマートな着こなしを演出します。
                 </p>
             </div>
         </div>

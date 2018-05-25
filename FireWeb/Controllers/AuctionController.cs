@@ -28,15 +28,23 @@ namespace FireWeb.Controllers
         [HttpPost]
         public ActionResult Preview(string Title, string Detail, DateTime StartTime, DateTime EndTime, int StartPrice, int DecidePrice, string Category, string Value, List<Byte> BytePicture)
         {
+            var TimeLimit = EndTime - DateTime.Now;
+            var LimitAlart = GetLimitAlart(TimeLimit);
+
+            
+
+
             ViewBag.Title = Title;
             ViewBag.Detail = Detail;
-            ViewBag.StartTime = StartTime;
-            ViewBag.EndTime = EndTime;
+            ViewBag.StartTime = StartTime.ToShortDateString();
+            ViewBag.EndTime = EndTime.ToShortDateString();
             ViewBag.StartPrice = StartPrice;
             ViewBag.DecidePrice = DecidePrice;
             ViewBag.Category = Category;
             ViewBag.Value = Value;
             ViewBag.BytePicture = BytePicture;
+            ViewBag.TimeLimit = TimeLimit;
+            ViewBag.LimitAlart = LimitAlart;
 
             return View();
         }
@@ -77,5 +85,32 @@ namespace FireWeb.Controllers
                 return View();
             }
         }
+
+        public int GetLimitAlart(TimeSpan LimitTime)
+        {
+            var OneDay = new TimeSpan(1, 0, 0, 0);
+            var HalfDay = new TimeSpan(0, 12, 0, 0);
+            var OneHour = new TimeSpan(0, 1, 0, 0);
+
+            var LimitAlart = 0;
+
+            if (LimitTime < OneHour)
+            {
+                LimitAlart = 3;
+            }
+            else
+            if (LimitTime < HalfDay)
+            {
+                LimitAlart = 2;
+            }
+            else
+            if (LimitTime < OneDay)
+            {
+                LimitAlart = 1;
+            }
+
+            return LimitAlart;
+        }
+
     }
 }
