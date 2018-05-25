@@ -9,7 +9,6 @@ namespace FireWeb.Controllers
 {
     public class AuctionController : Controller
     {
-        // GET: Exhibit
         public ActionResult Index()
         {
             return View();
@@ -26,57 +25,73 @@ namespace FireWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Preview(string Title, string Detail, DateTime StartTime, DateTime EndTime, int StartPrice, int DecidePrice, string Category, string Value, List<Byte> BytePicture)
+        public ActionResult Preview(string Title, string Detail, DateTime StartTime, DateTime EndTime, int StartPrice, int DecidePrice, string Category, string Value, HttpPostedFileWrapper img1, HttpPostedFileWrapper img2, HttpPostedFileWrapper img3 , HttpPostedFileWrapper img4)
         {
+            var item = new ItemModel();
             var TimeLimit = EndTime - DateTime.Now;
-            var LimitAlart = GetLimitAlart(TimeLimit);
+            var LimitAlart = item.GetLimitAlart(TimeLimit);
 
-            
+            var ImgList = item.WrapToImg(img1, img2, img3, img4);
+            var ByteList = item.ImageToByteArray(ImgList);
 
+            item.Title = Title;
+            item.Detail = Detail;            
+            item.StartPrice = StartPrice;
+            item.DecidePrice = DecidePrice;
+            item.Category = Category;
+            item.Value = Value;
+            item.BytePicture = ByteList;
 
-            ViewBag.Title = Title;
-            ViewBag.Detail = Detail;
             ViewBag.StartTime = StartTime.ToShortDateString();
             ViewBag.EndTime = EndTime.ToShortDateString();
-            ViewBag.StartPrice = StartPrice;
-            ViewBag.DecidePrice = DecidePrice;
-            ViewBag.Category = Category;
-            ViewBag.Value = Value;
-            ViewBag.BytePicture = BytePicture;
             ViewBag.TimeLimit = TimeLimit;
             ViewBag.LimitAlart = LimitAlart;
+            ViewBag.Year = EndTime.Year;
+            ViewBag.Month = EndTime.Month;
+            ViewBag.Day = EndTime.Day;
 
-            return View();
+            return View(item);
+
         }
 
-        public ActionResult ItemDetail()
+        public ActionResult ItemDetail(int ItemID)
         {
-            try
-            {
-                var list = new List<ItemModel>();
 
-                return View(list);
-            }
-            catch
-            {
-                return View();
-            }
+            var model = new ItemModel();
+            model = model.GetItemDetail(ItemID);
+            var LimitTime = model.EndTime - DateTime.Now;
+            var LimitAlart = model.GetLimitAlart(LimitTime);
+
+            ViewBag.StartTime = model.StartTime.ToShortDateString();
+            ViewBag.EndTime = model.EndTime.ToShortDateString();
+            ViewBag.TimeLimit = LimitTime;
+            ViewBag.LimitAlart = LimitAlart;
+            ViewBag.Year = model.EndTime.Year;
+            ViewBag.Month = model.EndTime.Month;
+            ViewBag.Day = model.EndTime.Day;
+
+            return View(model);
         }
      
 
-        // GET: Exhibit/Delete/5
+    
         public ActionResult ItemList()
         {
-            return View();
+
+            var list = new List<ItemModel>();
+            var model = new ItemModel();
+
+            list = model.GetItemDatas();
+            model.AddLimitAlarts(list);
+
+            return View(list);
         }
 
-        // POST: Exhibit/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
             try
             {
-                // TODO: Add delete logic here
 
                 return RedirectToAction("Index");
             }
@@ -86,31 +101,7 @@ namespace FireWeb.Controllers
             }
         }
 
-        public int GetLimitAlart(TimeSpan LimitTime)
-        {
-            var OneDay = new TimeSpan(1, 0, 0, 0);
-            var HalfDay = new TimeSpan(0, 12, 0, 0);
-            var OneHour = new TimeSpan(0, 1, 0, 0);
-
-            var LimitAlart = 0;
-
-            if (LimitTime < OneHour)
-            {
-                LimitAlart = 3;
-            }
-            else
-            if (LimitTime < HalfDay)
-            {
-                LimitAlart = 2;
-            }
-            else
-            if (LimitTime < OneDay)
-            {
-                LimitAlart = 1;
-            }
-
-            return LimitAlart;
-        }
+       
 
     }
 }

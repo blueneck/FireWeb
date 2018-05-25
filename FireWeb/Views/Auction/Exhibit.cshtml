@@ -7,177 +7,217 @@
 <h2>ExhibitView</h2>
 
 
+@using (Html.BeginForm("Preview", "Auction", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="col-md-6 col-md-offset-3" style="background-color:#ffffff;margin-bottom:100px">
+        <h4>ItemModel</h4>
+        <hr />
+        <div class="col-md-8 col-md-offset-2">
+            <div class="row">
+                <label class="box-label">タイトル</label>
+                <div class="row">
+                    <input class="form-control text-box single-line" id="Title" name="Title" type="text" value="" form="Submit" style="width:100%" />
+                    <span class="field-validation-valid text-danger" data-valmsg-for="Title" data-valmsg-replace="true"></span>
 
-<div class="form-horizontal ">
-    <h4>ItemModel</h4>
-    <hr />
+                </div>
+            </div>
 
-    <div class="form-group">
-        <label class="control-label col-md-2">タイトル</label>
-        <div class="col-md-10">
-            <input class="form-control text-box single-line" id="Title" name="Title" type="text" value="" form="Submit" />
-            <span class="field-validation-valid text-danger" data-valmsg-for="Title" data-valmsg-replace="true"></span>
+            <div class="row">
+                <label class="box-label">詳細</label>
+                <div class="row">
+                    <textarea cols="20" htmlAttributes="{ class = form-control }" id="Detail" name="Detail" rows="2" form="Submit"></textarea>
 
-        </div>
-    </div>
+                    <p class="help-block">※1000文字以内で書いてください</p>
+                    <span class="field-validation-valid text-danger" data-valmsg-for="Detail" data-valmsg-replace="true"></span>
 
-    <div class="form-group">
-        <label class="control-label col-md-2">詳細</label>
-        <div class="col-md-10">
-            <textarea cols="20" htmlAttributes="{ class = form-control }" id="Detail" name="Detail" rows="2" form="Submit"></textarea>
+                </div>
+            </div>
 
-            <p class="help-block">※1000文字以内で書いてください</p>
-            <span class="field-validation-valid text-danger" data-valmsg-for="Detail" data-valmsg-replace="true"></span>
+            <div class="col-md-8 col-md-offset-2">
+                <label class="box-label">画像プレビュー</label>
+                <div class="col-md-10" style="margin:0">
+                    @*<div id="carousel-img" class="carousel slide" data-ride="carousel" data-interval="250000">
+                            <ol class="carousel-indicators">
+                                <li data-target="#carousel-img" data-slide-to="0" class="active"></li>
+                                <li data-target="#carousel-img" data-slide-to="1"></li>
+                                <li data-target="#carousel-example" data-slide-to="2"></li>
+                            </ol>
 
-        </div>
-    </div>
+                            <div class="carousel-inner" role="listbox">
+                                <div class="item active">
+                                    <img id="img1" style="margin:0;height:500px;width:500px;">
+                                </div>
+                                <div class="item">
+                                    <img src="https://pbs.twimg.com/profile_images/3406268893/54b7e1f981b7df7c817af48d1b96ad5e_400x400.jpeg" style="margin:0;height:500px;width:500px;">
+                                    <ul>
+                                        <li>ファイル１：<%= file_field_tag "images[]", type: :file %></li>
+                                        <li>ファイル２：<%= file_field_tag "images[]", type: :file %></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <a class="left carousel-control" href="#carousel-img" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a class="right carousel-control" href="#carousel-img" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </a>
+                        </div>*@
 
-    <div class="form-group">
-        <label class="control-label col-md-2">画像プレビュー</label>
-        <div class="col-md-10" style="margin:0">
-            <div id="carousel-img" class="carousel slide" data-ride="carousel" data-interval="250000">
 
-                <!-- 2.表示中のスライドを表すリスト -->
-                <ol class="carousel-indicators">
-                    <li data-target="#carousel-img" data-slide-to="0" class="active"></li>
-                    <li data-target="#carousel-img" data-slide-to="1"></li>
-                    @*<li data-target="#carousel-example" data-slide-to="2"></li>*@
-                </ol>
 
-                <!-- 3.表示するスライドのコンテンツ -->
-                <div class="carousel-inner" role="listbox">
-                    <div class="item active">
-                        <img id="img1" style="margin:0;height:500px;width:500px;">
+                    <div class="col-md-6">
+
+                        <div class="view_box">
+                            <label>画像１</label>
+                            <input type="file" class="file" id="file1" name="img1">
+                        </div>
                     </div>
-                    <div class="item">
-                        <img src="https://pbs.twimg.com/profile_images/3406268893/54b7e1f981b7df7c817af48d1b96ad5e_400x400.jpeg" style="margin:0;height:500px;width:500px;">
+                    <div class="col-md-6">
+                        <div class="view_box">
+                            <label>画像２</label>
+                            <input type="file" class="file" id="file2" name="img2">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="view_box">
+                            <label>画像３</label>
+                            <input type="file" class="file" id="file3" name="img3">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="view_box">
+                            <label>画像４</label>
+                            <input type="file" class="file" id="file4" name="img4">
+                        </div>
                     </div>
                 </div>
-                <!-- 4.左右の矢印ボタン -->
-                <a class="left carousel-control" href="#carousel-img" role="button" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                </a>
-                <a class="right carousel-control" href="#carousel-img" role="button" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right"></span>
-                </a>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2">画像アップロード</label>
-            <div class="col-md-10">
-                <input id="lefile" type="file" style="display:none" name="uploadImage">
-                <div class="input-group" style="width:320px;margin-top:30px;">
-                    <input type="text" id="photoCover" class="form-control" placeholder="select file...">
-                    <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=lefile]').click();"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button></span>
+            <div class="col-md-8 col-md-offset-2" style="display:inline-flex;margin-left:104px;margin-top:30px;">
+                <label class="box-label">開始日</label>
+                <div class="input-group date" id="datepicker" style="width:200px">
+                    @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+
+                <label class="box-label" style="margin-left:20px;">終了日</label>
+                <div class="input-group date" id="datepicker" style="width:200px">
+                    @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2" style="margin-top:30px;">
+                <label class="box-label">終了時間</label>
+                <div class="col-md-10" style="width:250px;">
+                    @*@Html.EditorFor(model => model.ttt, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ttt, "", new { @class = "text-danger" })*@
+                </div>
+
+                <label class="control-label col-md-2" style="margin-left:20px;">期間：</label>
+            </div>
+
+
+
+            <div class="col-md-8 col-md-offset-2" style="margin-top:50px;">
+                <label class="box-label">開始価格</label>
+                <div class="col-md-10" style="width:250px;">
+                    @Html.EditorFor(model => model.StartPrice, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.StartPrice, "", new { @class = "text-danger" })
+                </div>
+                <label style="margin-top:10px">円</label>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2">
+                <label class="box-label">【任意】即決価格</label>
+                <div class="col-md-10" style="width:250px;">
+                    @Html.EditorFor(model => model.DecidePrice, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DecidePrice, "", new { @class = "text-danger" })
+                </div>
+                <label style="margin-top:10px">円</label>
+            </div>
+
+
+
+            <div class="col-md-8 col-md-offset-2" style="margin-top:50px;">
+                <label class="box-label">状態</label>
+                <div class="col-md-10">
+                    <select name="Value" class="navbar-default" style="height:40px; width:300px;"> <option value="new">新品・未使用</option><option value="beautiful">美品</option><option value="nomal">中古品</option><option value="old">使用感かなりある中古品</option><option value="junk">ジャンク品</option></select>
+                    @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2" style="margin-top:50px;">
+                <label class="box-label">【任意】カテゴリー</label>
+                <div class="col-md-10" style="width:250px;">
+                    @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+            <div class="col-md-8 col-md-offset-2">
+                <div class="square_btn">
+                    <button type="submit" value="preview" class="cp_btn"><font size="4" color="#fff">出品プレビュー</font></button>
                 </div>
             </div>
         </div>
     </div>
-    <a href="http://www.pa-consul.co.jp/TalentPalette/?utm_source=ITtrend&utm_medium=banner&utm_campaign=cp2018a">Talent</a>
-</div>
-<form action="/Auction/Preview" method="post" id="Submit">
-    @Html.AntiForgeryToken()
-    <div class="form-horizontal ">
-        <div class="form-group" style="display:inline-flex;margin-left:104px;margin-top:30px;">
-            <label class="control-label col-md-2">開始日</label>
-            <div class="input-group date" id="datepicker" style="width:200px">
-                @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
-                <div class="input-group-addon">
-                    <span class="glyphicon glyphicon-th"></span>
-                </div>
-            </div>
-
-            <label class="control-label col-md-2" style="margin-left:20px;">終了日</label>
-            <div class="input-group date" id="datepicker" style="width:200px">
-                @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
-                <div class="input-group-addon">
-                    <span class="glyphicon glyphicon-th"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-top:30px;">
-            <label class="control-label col-md-2">終了時間</label>
-            <div class="col-md-10" style="width:250px;">
-                @*@Html.EditorFor(model => model.ttt, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ttt, "", new { @class = "text-danger" })*@
-            </div>
-
-            <label class="control-label col-md-2" style="margin-left:20px;">期間：</label>
-        </div>
-
-
-
-        <div class="form-group" style="margin-top:50px;">
-            <label class="control-label col-md-2">開始価格</label>
-            <div class="col-md-10" style="width:250px;">
-                @Html.EditorFor(model => model.StartPrice, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartPrice, "", new { @class = "text-danger" })
-            </div>
-            <label style="margin-top:10px">円</label>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">【任意】即決価格</label>
-            <div class="col-md-10" style="width:250px;">
-                @Html.EditorFor(model => model.DecidePrice, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DecidePrice, "", new { @class = "text-danger" })
-            </div>
-            <label style="margin-top:10px">円</label>
-        </div>
-
-
-
-        <div class="form-group" style="margin-top:50px;">
-            <label class="control-label col-md-2">状態</label>
-            <div class="col-md-10">
-                <select name="Value" class="navbar-default" style="height:40px; width:300px;"> <option value="new">新品・未使用</option><option value="beautiful">美品</option><option value="nomal">中古品</option><option value="old">使用感かなりある中古品</option><option value="junk">ジャンク品</option></select>
-                @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-top:50px;">
-            <label class="control-label col-md-2">【任意】カテゴリー</label>
-            <div class="col-md-10" style="width:250px;">
-                @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            <div class="square_btn">
-                <button type="submit" value="preview" class="cp_btn"><font size="4" color="#fff">出品プレビュー</font></button>
-            </div>
-        </div>
-    </div>
-</form>
-
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" charset="UTF-8">></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.ja.min.js"></script>
-<script src="/Scripts/slick.min.js"></script>
-<script>
-    $('#datepicker').datepicker({
-        format: 'yyyy-mm-dd', //日付のフォーマット
-        language: 'ja' //日本語表示
-    });
-
-$(function ($) {
-    $('.slider789').slick();
-});
-
-</script>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
 }
-<script>
-    $('input[id=lefile]').change(function () {
-        $('#photoCover').val($(this).val().replace("C:\\fakepath\\", ""));
+
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" charset="UTF-8">></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.ja.min.js"></script>
+    <script src="/Scripts/slick.min.js"></script>
+    <script>
+        $('#datepicker').datepicker({
+            format: 'yyyy-mm-dd', //日付のフォーマット
+            language: 'ja' //日本語表示
+        });
+
+    $(function ($) {
+        $('.slider789').slick();
     });
-</script>
+
+    </script>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+    <script>
+        $('input[id=lefile]').change(function () {
+            $('#photoCover').val($(this).val().replace("C:\\fakepath\\", ""));
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".file").on('change', function () {
+                var fileprop = $(this).prop('files')[0],
+                    find_img = $(this).parent().find('img'),
+                    filereader = new FileReader(),
+                    view_box = $(this).parent('.view_box');
+
+                if (find_img.length) {
+                    find_img.nextAll().remove();
+                    find_img.remove();
+                }
+
+                var img = '<div class="img_view"><img alt="" class="img"><p><a href="#" class="img_del">画像を削除する</a></p></div>';
+
+                view_box.append(img);
+
+                filereader.onload = function () {
+                    view_box.find('img').attr('src', filereader.result);
+                    img_del(view_box);
+                }
+                filereader.readAsDataURL(fileprop);
+            });
+    </script>

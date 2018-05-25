@@ -132,7 +132,7 @@ namespace FireWeb.Controllers
             switch (column)
             {
                 case "id":
-                    query = "SELECT * FROM user WHERE userId like '%" + arr[0] + "%'";
+                    query = $"SELECT * FROM user WHERE userId like '%{arr[0]}%'";
                     foreach (string key in arr.Skip(1))
                     {
                         query = query + " " + searchType + " userId like '%" + key + "%'";

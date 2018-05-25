@@ -1,4 +1,4 @@
-﻿@model List<FireWeb.Models.ItemModel>
+﻿@model FireWeb.Models.ItemModel
 
 <div class="container">
     <div class="col-md-10 col-md-offset-1" style="background-color:#fff;margin-top:50px;">
@@ -72,7 +72,7 @@
                     </tr>
                     <tr style="font-size:40px;font-weight:600">
                         <td style="vertical-align:middle">@ViewBag.Count</td>
-                        <td style="vertical-align:middle">@ViewBag.TimeLimit</td>
+                        <td style="vertical-align:middle"><FORM name="tbox1"><INPUT name="dspday" type="text" style="border:0px;font-size:38px;width:200px;text-align:center"></FORM></td>
                     </tr>
                 </table>
             </div>
@@ -101,4 +101,51 @@
     </div>
 </div>
 
+<script>
+    function countdown(y, m, d) {
+        year = y
+        mon = m - 1
+        day = d - 1
+        xday = new Date(year, mon, day, 24, 00, 00);
+        nowday = new Date();
+        passtime = xday.getTime() - nowday.getTime();
+        passtime0 = passtime
+
+        cnt_day = Math.floor(passtime / (1000 * 60 * 60 * 24));
+        passtime = passtime - (cnt_day * (1000 * 60 * 60 * 24));
+
+        cnt_hour = Math.floor(passtime / (1000 * 60 * 60));
+        cnt0_hour = Math.floor(passtime0 / (1000 * 60 * 60));
+        passtime = passtime - (cnt_hour * (1000 * 60 * 60));
+
+        cnt_min = Math.floor(passtime / (1000 * 60));
+        passtime = passtime - (cnt_min * (1000 * 60));
+
+        cnt_sec = Math.floor(passtime / 1000);
+        passtime = passtime - (cnt_sec * (1000));
+
+        if (cnt_min < 10) { cnt_min = '0' + cnt_min; }
+        if (cnt_sec < 10) { cnt_sec = '0' + cnt_sec; }
+
+        if ((xday - nowday) >
+            0) {
+            if (cnt_day == 0) {
+                x = cnt0_hour + " : " + cnt_min + " : " + cnt_sec
+            } else {
+                x = cnt_day + " Days "
+            }
+        }
+        else {
+            x = "終了致しました。"
+        }
+        return x
+    }
+</script>
+<script type="text/javascript">
+    window.onload = showday;
+    function showday() {
+        document.tbox1.dspday.value = countdown(@ViewBag.Year , @ViewBag.Month , @ViewBag.Day );
+        timerID = setTimeout('showday()', 10);
+    }
+</script>
 
