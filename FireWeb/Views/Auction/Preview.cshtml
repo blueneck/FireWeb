@@ -1,128 +1,134 @@
 ﻿@model FireWeb.Models.ItemModel
 
-<div class="container body-content">
-    <div class="container">
-        <div class="col-md-10 col-md-offset-1" style="background-color:#fff;margin-top:50px;">
-            <div class="row" style="height:auto;margin:20px auto 20px auto">
-                <h3 style="font-weight:600;font-size:x-large">@ViewBag.Title</h3>
-            </div>
-            <div class="row" style="">
-                <div class="col-md-7">
-                    <div id="carousel-img" class="carousel slide" data-ride="carousel" data-interval="250000">
+@using (Html.BeginForm("Decide", "Auction", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="container body-content">
+        <div class="container">
+            <div class="col-md-10 col-md-offset-1" style="background-color:#fff;margin-top:50px;">
+                <div class="row" style="height:auto;margin:20px auto 20px auto">
+                    <h3 style="font-weight:600;font-size:x-large">@Model.Title</h3>
+                </div>
+                <div class="row" style="">
+                    <div class="col-md-7">
+                        <div id="carousel-img" class="carousel slide" data-ride="carousel" data-interval="250000"  style="width:500px;margin-left:20px">
 
-                        <!-- 2.表示中のスライドを表すリスト -->
-                        <ol class="carousel-indicators">
-                            <li data-target="#carousel-img" data-slide-to="0" class="active"></li>
-                            <li data-target="#carousel-img" data-slide-to="1"></li>
-                            @*<li data-target="#carousel-example" data-slide-to="2"></li>*@
-                        </ol>
+                            <!-- 2.表示中のスライドを表すリスト -->
+                            <ol class="carousel-indicators">
+                                <li data-target="#carousel-img" data-slide-to="0" class="active"></li>
+                                <li data-target="#carousel-img" data-slide-to="1"></li>
+                                @*<li data-target="#carousel-example" data-slide-to="2"></li>*@
+                            </ol>
 
-                        <!-- 3.表示するスライドのコンテンツ -->
-                        <div class="carousel-inner" role="listbox">
-                            @using System.Drawing;
-                            @{
-                                foreach (byte[] i in Model.BytePicture)
-                                {
-                                    var path = "data:image/jpg;base64," + i;
+                            <!-- 3.表示するスライドのコンテンツ -->
+                            <div class="carousel-inner" role="listbox">
+                                @{
+                                    var firstImage = true;
+                                    foreach (String i in Model.PicPath)
+                                    {
+                                        if (firstImage == true)
+                                        {
+                                            <div class="item active">
+                                                <img src="@i" style="margin:0;height:500px;width:550px;">
+                                            </div>
+                                            firstImage = false;
+                                        }
+                                        else
+                                        {
+                                            <div class="item">
+                                                <img src="@i" style="margin:0;height:500px;width:550px;">
+                                            </div>
+                                        }
 
-                                    <div class="item active">
-                                        <img src="@i"  style="margin:0;height:500px;width:550px;">
-                                    </div>
+                                    }
                                 }
-                            }
 
+                            </div>
+
+                            <!-- 4.左右の矢印ボタン -->
+                            <a class="left carousel-control" href="#carousel-img" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a class="right carousel-control" href="#carousel-img" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </a>
                         </div>
-
-                        <!-- 4.左右の矢印ボタン -->
-                        <a class="left carousel-control" href="#carousel-img" role="button" data-slide="prev">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </a>
-                        <a class="right carousel-control" href="#carousel-img" role="button" data-slide="next">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
+                    </div>
+                    <div class="col-md-5">
+                        <table class="table table-bordered" style="height:300px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+                            <tr>
+                                <th>出品者</th>
+                                <td>@Model.Owner</td>
+                            </tr>
+                            <tr>
+                                <th>カテゴリー</th>
+                                <td>@Model.Category</td>
+                            </tr>
+                            <tr>
+                                <th>状態</th>
+                                <td>@Model.Value</td>
+                            </tr>
+                            <tr>
+                                <th>開始価格</th>
+                                <td>@Model.StartPrice 円</td>
+                            </tr>
+                            <tr>
+                                <th>即決価格</th>
+                                <td>@Model.DecidePrice 円</td>
+                            </tr>
+                            <tr>
+                                <th>開始日時</th>
+                                <td>@Model.StartTime</td>
+                            </tr>
+                            <tr>
+                                <th>終了日時</th>
+                                <td>@Model.EndTime</td>
+                            </tr>
+                        </table>
+                        <table class="table table-bordered" style="height:165px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+                            <tr style="height:30px">
+                                <th>入札回数</th>
+                                <th>残り時間</th>
+                            </tr>
+                            <tr style="font-size:40px;font-weight:600">
+                                <td style="vertical-align:middle">0</td>
+                                <td style="vertical-align:middle"><FORM name="tbox1"><INPUT name="dspday" type="text" style="border:0px;font-size:38px;width:200px;text-align:center"></FORM></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <table class="table table-bordered" style="height:300px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
-                        <tr>
-                            <th>出品者</th>
-                            <td>@ViewBag.Owner</td>
-                        </tr>
-                        <tr>
-                            <th>カテゴリー</th>
-                            <td>@ViewBag.Category</td>
-                        </tr>
-                        <tr>
-                            <th>状態</th>
-                            <td>@ViewBag.Value</td>
-                        </tr>
-                        <tr>
-                            <th>開始価格</th>
-                            <td>@ViewBag.StartPrice 円</td>
-                        </tr>
-                        <tr>
-                            <th>即決価格</th>
-                            <td>@ViewBag.DecidePrice 円</td>
-                        </tr>
-                        <tr>
-                            <th>開始日時</th>
-                            <td>@ViewBag.StartTime</td>
-                        </tr>
-                        <tr>
-                            <th>終了日時</th>
-                            <td>@ViewBag.EndTime</td>
-                        </tr>
-                    </table>
-                    <table class="table table-bordered" style="height:165px;font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
-                        <tr style="height:30px">
-                            <th>入札回数</th>
-                            <th>残り時間</th>
-                        </tr>
-                        <tr style="font-size:40px;font-weight:600">
-                            <td style="vertical-align:middle">0</td>
-                            <td style="vertical-align:middle"><FORM name="tbox1"><INPUT name="dspday" type="text" style="border:0px;font-size:38px;width:200px;text-align:center"></FORM></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="row" style="text-align: center;vertical-align: middle;">
-                <div class="now_price" style="text-align: center;vertical-align: middle;margin-top:50px">
-                    <span style="text-align: center;vertical-align: middle;font-size:30px;">【現在価格】</span>
-                    <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@ViewBag.StartPrice 円</span><span style="vertical-align:bottom" ;>(税・送料込み)</span>
-                </div>
-            </div>
-            <div class="row" style="height:auto">
-                <div class="col-md-10 col-md-offset-1">
-                    <div class="square_btn">
-                        <button type="submit" value="preview" class="cp_btn" style="margin:50px 0 80px 80px;background-color:#808080" disabled><font size="5" color="#fff">入札</font></button>
+                <div class="row" style="text-align: center;vertical-align: middle;">
+                    <div class="now_price" style="text-align: center;vertical-align: middle;margin-top:50px">
+                        <span style="text-align: center;vertical-align: middle;font-size:30px;">【現在価格】</span>
+                        <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@Model.StartPrice 円</span><span style="vertical-align:bottom" ;>(税・送料込み)</span>
                     </div>
                 </div>
-            </div>
-
-            <div class="row" style="height:auto">
-                <div class="col-md-10 col-md-offset-1" style="margin-bottom:70px">
-                    <p style="font-size:20px">
-                        @ViewBag.Detail
-                    </p>
+                <div class="row" style="height:auto">
+                    <div class="col-md-10 col-md-offset-1" style="margin-bottom:70px">
+                        <p style="font-size:20px">
+                            @Model.Detail
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row" style="height:auto">
-                <div class="col-md-10 col-md-offset-1">
-                    <div class="square_btn">
-                        <button type="submit" value="preview" class="cp_btn" style="margin:50px 0 80px 80px"><font size="5" color="#fff">出品</font></button>
+                <div class="row" style="height:auto">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="square_btn" style="display:inline-flex">
+                            <button type="submit" value="itemlist" class="cp_btn" style="width:300px;margin:50px 0 80px 40px"><font size="5" color="#fff">上記内容で出品</font></button>
+                            <button type="submit" value="return" class="cp_btn" style="width:300px;margin:50px 0 80px 80px;"><font size="5" color="#fff">修正</font></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+
 <script>
-    function countdown(y, m, d) {
+    function countdown(y, m, d , h, m, s) {
         year = y
         mon = m - 1
         day = d - 1
-        xday = new Date(year, mon, day, 24, 00, 00);
+        xday = new Date(year, mon, day, h, m, s);
         nowday = new Date();
         passtime = xday.getTime() - nowday.getTime();
         passtime0 = passtime
@@ -160,7 +166,7 @@
 <script type="text/javascript">
     window.onload = showday;
     function showday() {
-        document.tbox1.dspday.value = countdown(@ViewBag.Year , @ViewBag.Month , @ViewBag.Day );
-        timerID = setTimeout('showday()', 10);
+        document.tbox1.dspday.value = countdown(@Model.EndTime.Year , @Model.EndTime.Month , @Model.EndTime.Day, @Model.EndTime.Hour ,@Model.EndTime.Minute ,@Model.EndTime.Second);
+        setInterval("showCountdown()", 1000);
     }
 </script>

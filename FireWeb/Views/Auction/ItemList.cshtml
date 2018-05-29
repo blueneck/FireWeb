@@ -14,7 +14,7 @@
             <h1 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:40px;"><img src="" style="height:100px;width:100px;margin:60px" />Fire Auction</h1>
         </div>
 
-        @using (Html.BeginForm("List", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Search", "Auction", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <div class="row" style="margin-top:80px">
                 <div class="col-md-8 col-md-offset-2" style="height:80px;padding-left:0px">
@@ -74,11 +74,12 @@
 
         <div style="margin-top:50px;">
             <div class="row">
-                @*@foreach (var item in Model)
+                @foreach (var item in Model)
                 {
-                    <div class="col-md-3" style="height:500px;margin:0">
+                    <div class="col-md-3" style="height:500px;width:320px;margin:0">
                         <div class="AucItem">
-                            <img src="@Html.DisplayFor(modelItem => item.BytePicture[0])" style="margin:2px;height:290px;width:290px;">
+                            <a href="http://localhost:64312/Auction/ItemDetail/@item.Id" style="color:#000;text-decoration:none"/>
+                            <img src="@Html.DisplayFor(modelItem => item.PicPath[0])" style="margin:2px;height:290px;width:290px;">
                             <div class="itemList-info">
                                 <h3 style="height:35px"> @Html.DisplayFor(modelItem => item.Title)</h3>
                                 <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
@@ -87,124 +88,7 @@
                             </div>
                         </div>
                     </div>
-                }*@
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px">  (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/photos/m378692484_1.jpg?1453129623" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m53676817652_1.jpg?1527081230" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m83275125151_1.jpg?1527158590" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m67618830753_1.jpg?1526899013" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div><div class="col-md-3" style="height:500px;margin:0">
-                    <div class="AucItem">
-                        <img src="https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m51628217916_1.jpg?1527158707" style="margin:2px;height:290px;width:290px;">
-                        <div class="itemList-info">
-                            <h3 style="height:35px">スーパー・タイタニック・ハリネズミ</h3>
-                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;">3000円</span><span style="font-size:12px"> (税・送料込み)</span><p>
-                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;">3:02:45</span></div>
-                        </div>
-                    </div>
-                </div>
-
-
+                }
             </div>
         </div>
     </div>

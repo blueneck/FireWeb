@@ -16,8 +16,8 @@
             <div class="row">
                 <label class="box-label">タイトル</label>
                 <div class="row">
-                    <input class="form-control text-box single-line" id="Title" name="Title" type="text" value="" form="Submit" style="width:100%" />
-                    <span class="field-validation-valid text-danger" data-valmsg-for="Title" data-valmsg-replace="true"></span>
+                    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
 
                 </div>
             </div>
@@ -25,8 +25,7 @@
             <div class="row">
                 <label class="box-label">詳細</label>
                 <div class="row">
-                    <textarea cols="20" htmlAttributes="{ class = form-control }" id="Detail" name="Detail" rows="2" form="Submit"></textarea>
-
+                    <textarea cols="20" htmlAttributes="{ class = form-control }" id="Detail" name="Detail" rows="2"></textarea>
                     <p class="help-block">※1000文字以内で書いてください</p>
                     <span class="field-validation-valid text-danger" data-valmsg-for="Detail" data-valmsg-replace="true"></span>
 
@@ -159,7 +158,6 @@
                     @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
                 </div>
             </div>
-
 
             <div class="col-md-8 col-md-offset-2">
                 <div class="square_btn">

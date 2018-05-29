@@ -25,36 +25,44 @@ namespace FireWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Preview(string Title, string Detail, DateTime StartTime, DateTime EndTime, int StartPrice, int DecidePrice, string Category, string Value, HttpPostedFileWrapper img1, HttpPostedFileWrapper img2, HttpPostedFileWrapper img3 , HttpPostedFileWrapper img4)
+        public ActionResult Preview(string Title, string Detail, DateTime StartTime, DateTime EndTime, int StartPrice, int DecidePrice, string Category, string Value, HttpPostedFileWrapper img1, HttpPostedFileWrapper img2, HttpPostedFileWrapper img3, HttpPostedFileWrapper img4)
         {
             var item = new ItemModel();
             var TimeLimit = EndTime - DateTime.Now;
             var LimitAlart = item.GetLimitAlart(TimeLimit);
 
-            var ImgList = item.WrapToImg(img1, img2, img3, img4);
-            var ByteList = item.ImageToByteArray(ImgList);
+            var PicPath = item.GetTmpImagePath(img1, img2, img3, img4);
+
+            //var ImgList = item.WrapToImg(img1, img2, img3, img4);
+            //var ByteList = item.ImageToByteArray(ImgList);
 
             item.Title = Title;
-            item.Detail = Detail;            
+            item.Detail = Detail;
             item.StartPrice = StartPrice;
             item.DecidePrice = DecidePrice;
             item.Category = Category;
             item.Value = Value;
-            item.BytePicture = ByteList;
+            item.PicPath = PicPath;
+            item.StartTime = StartTime;
+            item.EndTime = EndTime;
 
-            ViewBag.StartTime = StartTime.ToShortDateString();
-            ViewBag.EndTime = EndTime.ToShortDateString();
+            Session["model"] = item;
+      
             ViewBag.TimeLimit = TimeLimit;
-            ViewBag.LimitAlart = LimitAlart;
-            ViewBag.Year = EndTime.Year;
-            ViewBag.Month = EndTime.Month;
-            ViewBag.Day = EndTime.Day;
+            ViewBag.LimitAlart = LimitAlart;         
 
             return View(item);
 
         }
 
-        public ActionResult ItemDetail(int ItemID)
+        public ActionResult Decide()
+        {
+            var model = (ItemModel)Session["model"];
+            model.AddItem();
+            return RedirectToAction("ItemList");
+        }
+
+        public ActionResult ItemDetail(String ItemID)
         {
 
             var model = new ItemModel();
@@ -62,19 +70,14 @@ namespace FireWeb.Controllers
             var LimitTime = model.EndTime - DateTime.Now;
             var LimitAlart = model.GetLimitAlart(LimitTime);
 
-            ViewBag.StartTime = model.StartTime.ToShortDateString();
-            ViewBag.EndTime = model.EndTime.ToShortDateString();
             ViewBag.TimeLimit = LimitTime;
-            ViewBag.LimitAlart = LimitAlart;
-            ViewBag.Year = model.EndTime.Year;
-            ViewBag.Month = model.EndTime.Month;
-            ViewBag.Day = model.EndTime.Day;
+            ViewBag.LimitAlart = LimitAlart;           
 
             return View(model);
         }
-     
 
-    
+
+
         public ActionResult ItemList()
         {
 
@@ -101,7 +104,7 @@ namespace FireWeb.Controllers
             }
         }
 
-       
+
 
     }
 }

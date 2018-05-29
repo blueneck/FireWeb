@@ -15,8 +15,8 @@ namespace FireWeb
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{page}",
-                defaults: new { controller = "Home", action = "Index", page = UrlParameter.Optional }
+                url: "{controller}/{action}/{ItemID}",
+                defaults: new { controller = "Home", action = "Index", ItemID = UrlParameter.Optional }
             );
         }
     }
