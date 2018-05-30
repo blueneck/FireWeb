@@ -11,84 +11,85 @@
 <div class="container" style="width:1300px;max-width:1500px;">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h1 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:40px;"><img src="" style="height:100px;width:100px;margin:60px" />Fire Auction</h1>
+            <h1 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:40px;"><img src="../image/icon.png" style="height:100px;width:100px;margin:30px 20px 60px 100px" />Fire Auction</h1>
         </div>
-
-        @using (Html.BeginForm("Search", "Auction", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            <div class="row" style="margin-top:80px">
-                <div class="col-md-8 col-md-offset-2" style="height:80px;padding-left:0px">
-                    <div class="col-md-3" style="padding-left:0;padding-right:5px">
-                        <select name="column" class="navbar-default" style="height:40px;width:100%"> <option value="all">全て</option><option value="Category">カテゴリー</option><option value="Title">タイトル</option><option value="Name">ユーザー名</option><option value="Detail">詳細</option></select>
-                    </div>
-                    <div class="col-md-6" style="padding:0;">
-                        <input class="form-control text-box single-line" id="name" name="keyword" type="text" value="@Session["Searchword"]" style="display:inline-block;width:100%;height:40px;font-size:18px">
-                    </div>
-                    <div class="col-md-1" style="height:40px;padding-left:5px">
-                        <input type="submit" value="Search" class="btn btn-default" style="position:relative;Display:inline-block;height:40px">
-                    </div>
-                    <div class="col-md-2">
-                        <span onclick="dispOption(0)" class="btnnn">+</span>
-                    </div>
+        @using (Html.BeginForm("ItemList", "Auction", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row" style="margin-top:80px">
+            <div class="col-md-8 col-md-offset-2" style="height:80px;padding-left:0px">
+                <div class="col-md-3" style="padding-left:0;padding-right:5px">
+                    <select name="column" class="navbar-default" style="height:40px;width:100%"> <option value="all">全て</option><option value="Category">カテゴリー</option><option value="Title">タイトル</option><option value="Name">ユーザー名</option><option value="Detail">詳細</option></select>
+                </div>
+                <div class="col-md-6" style="padding:0;">
+                    <input class="form-control text-box single-line" id="name" name="keyword" type="text" value="@Session["Searchword"]" style="display:inline-block;width:100%;height:40px;font-size:18px">
+                </div>
+                <div class="col-md-1" style="height:40px;padding-left:5px">
+                    <input type="submit" value="Search" class="btn btn-default" style="position:relative;Display:inline-block;height:40px">
+                </div>
+                <div class="col-md-2">
+                    <span onclick="dispOption(0)" class="btnnn">+</span>
                 </div>
             </div>
-            <div class="row" id="disp" style="display:none">
-                <div class="col-md-8 col-md-offset-2">
-                    <label class="control-label col-md-10"><h4>検索条件</h4></label>
-                    <div class="col-md-10">
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="AND" name="searchType" checked><label class="con_label" for="andSearch">AND</label>
-                        </p>
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="OR" name="searchType"><label for="orSearch" class="con_label">OR</label>
-                        </p>
-                    </div>
-                    <label class="control-label col-md-10"><h4>商品ステータス</h4></label>
-                    <div class="col-md-10">
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="All" name="searchStatus" checked><label for="andSearch" class="con_label">全て</label>
-                        </p>
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="Sell" name="searchStatus"><label for="orSearch" class="con_label">出品中</label>
-                        </p>
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="Sold" name="searchStatus"><label for="orSearch" class="con_label">売却済み</label>
-                        </p>
-                    </div>
-                    <label class="control-label col-md-10"><h4>ユーザー商品ステータス</h4></label>
-                    <div class="col-md-10">
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="All" name="searchU" checked><label for="andSearch" class="con_label">全て</label>
-                        </p>
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="Sell" name="searchU"><label for="orSearch" class="con_label">出品中</label>
-                        </p>
-                        <p style="display:inline-block; width:100px;">
-                            <input type="radio" class="SearchTeam" value="Sold" name="searchU"><label for="orSearch" class="con_label">売却済み</label>
-                        </p>
-                    </div>
+        </div>
+        <div class="row" id="disp" style="display:none">
+            <div class="col-md-8 col-md-offset-2">
+                <label class="control-label col-md-10"><h4>検索条件</h4></label>
+                <div class="col-md-10">
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="AND" name="searchType" checked><label class="con_label" for="andSearch">AND</label>
+                    </p>
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="OR" name="searchType"><label for="orSearch" class="con_label">OR</label>
+                    </p>
+                </div>
+                <label class="control-label col-md-10"><h4>ユーザー商品ステータス</h4></label>
+                <div class="col-md-10">
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="All" name="searchU" checked><label for="andSearch" class="con_label">全て</label>
+                    </p>
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="Sell" name="searchU"><label for="orSearch" class="con_label">出品済み</label>
+                    </p>
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="Sold" name="searchU"><label for="orSearch" class="con_label">入札済み</label>
+                    </p>
+                </div>
+                <label class="control-label col-md-10"><h4>商品ステータス</h4></label>
+                <div class="col-md-10">
+                    <input id="SearchStatus" name="SearchStatus" type="checkbox" value="true" style=""><input name="SearchStatus" type="hidden" value="false">出品終了している商品も表示
+                </div>
+                <label class="control-label col-md-10"><h4>ソート条件</h4></label>
+                <div class="col-md-10">
+                    <select name="sortColumn" class="navbar-default" style="height:40px;width:30%;margin-right:30px"> <option value="EndTime">入札締め切り日時</option><option value=" StartTime">出品日時</option><option value="Title">タイトル</option></select>
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="asc" name="sortType" checked><label class="con_label" for="andSearch">降順</label>
+                    </p>
+                    <p style="display:inline-block; width:100px;">
+                        <input type="radio" class="SearchTeam" value="desc" name="sortType"><label for="orSearch" class="con_label">昇順</label>
+                    </p>
                 </div>
             </div>
-        }
+        </div>
+}
 
 
         <div style="margin-top:50px;">
             <div class="row">
                 @foreach (var item in Model)
-                {
-                    <div class="col-md-3" style="height:500px;width:320px;margin:0">
-                        <div class="AucItem">
-                            <a href="http://localhost:64312/Auction/ItemDetail/@item.Id" style="color:#000;text-decoration:none"/>
-                            <img src="@Html.DisplayFor(modelItem => item.PicPath[0])" style="margin:2px;height:290px;width:290px;">
-                            <div class="itemList-info">
-                                <h3 style="height:35px"> @Html.DisplayFor(modelItem => item.Title)</h3>
-                                <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
-                                <p><span style="font-weight:600;font-size:30px;margin-left:80px;"> @Html.DisplayFor(modelItem => item.NowPrice)</span><span style="font-size:12px">  (税・送料込み)</span><p>
-                                    <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;"> </span></div>
-                            </div>
+            {
+                <div class="col-md-3" style="height:500px;width:320px;margin:0">
+                    <div class="AucItem">
+                        <a href="http://localhost:64312/Auction/ItemDetail/@item.Id" style="color:#000;text-decoration:none" />
+                        <img src="@Html.DisplayFor(modelItem => item.PicPath[0])" style="margin:2px;height:290px;width:290px;">
+                        <div class="itemList-info">
+                            <h3 style="height:35px"> @Html.DisplayFor(modelItem => item.Title)</h3>
+                            <h4 style="font-size:15px;margin:10px 0 0 20px">【現在価格】</h4>
+                            <p><span style="font-weight:600;font-size:30px;margin-left:80px;"> @Html.DisplayFor(modelItem => item.NowPrice)</span><span style="font-size:12px">  (税・送料込み)</span><p>
+                                <div style="background-color:#ff9ed4 ; padding-left:20px; font-size:20px">残り <span style="font-weight:600;font-size:30px;padding-left:20px;"> </span></div>
                         </div>
                     </div>
-                }
+                </div>
+        }
             </div>
         </div>
     </div>

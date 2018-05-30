@@ -2,33 +2,43 @@
 
 
 <div class="modal_wrap">
-    <input id="trigger" type="checkbox">
+    <input id="trigger" type="checkbox" style="display:none">
     <div class="modal_overlay">
         <label for="trigger" class="modal_trigger"></label>
         <div class="modal_content">
-            <div>
-                <label for="trigger" class="close_button">✖️</label>
-                <h1>入札</h1>
-                <input style="z-index:100000" class="form-control text-box single-line" data-val="true" data-val-number="フィールド DecidePrice には数字を指定してください。" data-val-required="DecidePrice フィールドが必要です。" id="DecidePrice" name="DecidePrice" type="number" value="">
-                <div class="col-md-8 col-md-offset-1">
-                    <div class="form-group">
-                        <label>name</label>
-                        <input type="text" name="email" class="form-control">
+            <div class="modal-body">
+                <form id="bid" action="/Auction/Did" enctype="multipart/form-data" method="post">
+                    <div class="col-md-8 col-md-offset-1">
+                        <h1 style="font-weight:600">入札設定</h1>
+                        <br>
+                        <h3 style="font-weight:600">現在価格</h3>
+                        <h3>@Model.NowPrice<span style="font-size:20px;margin:60px 0 0 10px">円 (税・送料込み)</span></h3>
+                        <h3 style="font-weight:600">即決価格</h3>
+                        <h3>@Model.DecidePrice<span style="font-size:20px;margin:60px 0 0 10px">円 (税・送料込み)</span></h3>
+                        <br>
+                        <h3 style="font-weight:600">入札金額設定</h3>
+                        <div style="display:inline-flex;height:100px">
+                            <input class="form-control text-box single-line" data-val="true" data-val-number="入札金額を指定してください。" id="bidPrice" name="bidPrice" type="number" value="@Model.NowPrice" style="width:200px;font-size:30px;margin:20px 0 50px 50px;text-align:right;text"><span style="font-size:20px;margin:30px 0 0 10px">円 (税・送料込み)</span>
+                        </div>
                     </div>
-                    <div class="square_btn">
-                        <button type="submit" value="preview" class="cp_btn" style="font-weight:600"><font size="6" color="#fff">入札</font></button>
+                    <div class="square_btn" style="display:inline-flex">
+                        <button type="submit" value="itemlist" class="cp_btn" style="width:300px;margin:50px 0 80px 0px"><font size="5" color="#fff">上記内容で入札</font></button>
+                        <label for="trigger" class="close_button" style="text-align:center;text-anchor:middle"><font size="5" color="#fff">キャンセル</font></label>
                     </div>
-                </div>
-            </div>
+                    <input hidden type="hidden" name="ItemID" value="@Model.Id">
+                    <input hidden type="hidden" name="NowPrice" value="@Model.NowPrice">
+                    <input hidden type="hidden" name="DecidePrice" value="@Model.DecidePrice">
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+
 <div class="container">
     <div class="col-md-10 col-md-offset-1" style="background-color:#fff;margin-top:50px;">
         <div class="row" style="height:auto;margin:20px auto 20px auto">
-            <h3 style="font-weight:600;font-size:x-large">@ViewBag.Title</h3>
+            <h3 style="font-weight:600;font-size:x-large">@Model.Title</h3>
         </div>
         <div class="row" style="">
             <div class="col-md-7">

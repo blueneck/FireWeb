@@ -44,26 +44,32 @@ namespace FireWeb.Models
         //public List<Byte[]> BytePicture { get; set; }
         public List<String> PicPath { get; set; }
         public int LimitAlert { get; set; }
+        public int Finish { get; set; }
+        public String BidUser { get; set; }
 
 
         public void AddItem()
         {
             using (var con = new MySqlConnection(connst))
             {
+                con.Open();
+                MySqlTransaction transaction = con.BeginTransaction(IsolationLevel.ReadCommitted);
                 Guid id = Guid.NewGuid();
+
                 try
                 {
-                    con.Open();
+                    
+
 
                     var query = "";
-
+                    var finish = 0;
                     var cmd = new MySqlCommand(query, con);
 
                     cmd.CommandText = $@"INSERT INTO items (
-                    Id,Owner,Title,Detail,StartTime,EndTime,StartPrice,NowPrice,DecidePrice,Category,Value
+                    Id,Owner,Title,Detail,StartTime,EndTime,StartPrice,NowPrice,DecidePrice,Category,Value,Finish
                     )
                     VALUES(
-                    @Id,@Owner,@Title,@Detail,@StartTime,@EndTime,@StartPrice,@NowPrice,@DecidePrice,@Category,@Value)";
+                    @Id,@Owner,@Title,@Detail,@StartTime,@EndTime,@StartPrice,@NowPrice,@DecidePrice,@Category,@Value,@Finish)";
 
                     cmd.Parameters.Add(new MySqlParameter("@Id", id));
                     cmd.Parameters.Add(new MySqlParameter("@Owner", this.Owner));
@@ -74,26 +80,21 @@ namespace FireWeb.Models
                     cmd.Parameters.Add(new MySqlParameter("@StartPrice", this.StartPrice));
                     cmd.Parameters.Add(new MySqlParameter("@NowPrice", this.StartPrice));
                     cmd.Parameters.Add(new MySqlParameter("@DecidePrice", this.DecidePrice));
-                    //cmd.Parameters.Add(new MySqlParameter("@FinelPrice", this.FinalPrice));
                     cmd.Parameters.Add(new MySqlParameter("@Category", this.Category));
                     cmd.Parameters.Add(new MySqlParameter("@Value", this.Value));
-                    //cmd.Parameters.Add(new MySqlParameter("@PicPath", this.PicPath));
+                    cmd.Parameters.Add(new MySqlParameter("@Finish", finish));
 
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
-                }
-                finally
-                {
-                    con.Close();
+                    transaction.Rollback();
                 }
 
                 foreach (String path in this.PicPath)
                 {
                     try
                     {
-                        con.Open();
                         var query = "";
 
                         var cmd = new MySqlCommand(query, con);
@@ -111,14 +112,122 @@ namespace FireWeb.Models
                     }
                     catch (Exception ex)
                     {
-
-                    }
-                    finally
-                    {
-                        con.Close();
+                        transaction.Rollback();
                     }
                 }
+                transaction.Commit();
+
             }
+        }
+
+        public void AddDid(String ItemID, int bidPrice, int NowPrice, int DecidePrice)
+        {
+            var flg = CheckBid(NowPrice, DecidePrice, bidPrice);
+
+            if (flg == 1)
+            {
+
+                return;
+            }
+            else
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    Guid id = Guid.NewGuid();
+                    var bidTime = DateTime.Now;
+                    con.Open();
+                    MySqlTransaction transaction = con.BeginTransaction(IsolationLevel.ReadCommitted);
+                    try
+                    {
+                        
+
+                        var query = "";
+
+                        var cmd = new MySqlCommand(query, con);
+
+                        cmd.CommandText = $@"INSERT INTO bids  (
+                    ItemID,bid_user,bidPrice,bidTime
+                    )
+                    VALUES(
+                    @ItemID,@bid_user,@bidPrice,@bidTime
+                    )";
+
+                        cmd.Parameters.Add(new MySqlParameter("@ItemID", ItemID));
+                        cmd.Parameters.Add(new MySqlParameter("@bid_user", "tester"));
+                        cmd.Parameters.Add(new MySqlParameter("@bidPrice", bidPrice));
+                        cmd.Parameters.Add(new MySqlParameter("@bidTime", bidTime));
+
+                        cmd.ExecuteNonQuery();
+
+                        if (flg == 2)
+                        {
+                            var cmdfin = new MySqlCommand(query, con);
+
+                            cmd.CommandText = $@"INSERT INTO items  (
+                    Finish
+                    )
+                    VALUES(
+                    1
+                    )
+                    WHERE Id = {ItemID}
+                    ";
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                    }
+
+                    transaction.Commit();
+
+                }
+            }
+        }
+
+        public int CheckBid(int NowPrice, int DecidePrice, int bidPrice)
+        {
+            var message = 0;
+
+            if (NowPrice > bidPrice)
+            {
+                message = 1;
+            }
+            if (DecidePrice <= bidPrice)
+            {
+                message = 2;
+            }
+
+            return message;
+        }
+
+        public int GetBitCount(string ItemID)
+        {
+            var count = 0;
+
+            using (var con = new MySqlConnection(connst))
+            {
+                try
+                {
+                    con.Open();
+
+                    var query = "";
+
+                    var cmd = new MySqlCommand(query, con);
+
+                    cmd.CommandText = $@"SELECT count(ItemID) FROM bids WHERE ItemID = '{ItemID}'";
+                    var read = cmd.ExecuteScalar();
+                    count = int.Parse(read.ToString());
+
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            return count;
         }
 
         public ItemModel GetItemDetail(String id)
@@ -129,12 +238,90 @@ namespace FireWeb.Models
             using (var con = new MySqlConnection(connst))
             {
                 con.Open();
-                var query = $"SELECT * FROM items WHERE Id = '{id}';";
+                var query = $@"SELECT *,MAX(bidPrice) FROM items 
+                LEFT OUTER JOIN bids
+                ON items.Id = bids.ItemID
+                AND items.Id ='{id}'
+                Group by Id
+                ; ";
+
                 var command = new MySqlCommand(query, con);
                 var reader = command.ExecuteReader();
                 while (reader.Read() == true)
                 {
                     using (var Imgcon = new MySqlConnection(connst))
+                    {
+
+                        Imgcon.Open();
+
+                        query = $"SELECT path FROM images where ItemID = '{reader["Id"].ToString()}';";
+                        var Imgcommand = new MySqlCommand(query, Imgcon);
+                        var Imgreader = Imgcommand.ExecuteReader();
+                        var imagePath = new List<String>();
+                        var bidPrice = 0;
+                        var bid_user = "";
+
+                        if (reader["MAX(bidPrice)"].ToString() == "")
+                        {
+                            bidPrice = (int)reader["StartPrice"];
+                        }
+                        else
+                        {
+                            bidPrice = (int)reader["MAX(bidPrice)"];
+                            bid_user = reader["Owner"].ToString();
+                        }
+
+                        while (Imgreader.Read())
+                        {
+                            imagePath.Add(Imgreader["path"].ToString());
+                        }
+                        Imgcon.Close();
+
+                        list.Add(new ItemModel
+                        {
+                            Id = reader["Id"].ToString(),
+                            Owner = "owner",
+                            Title = reader["Title"].ToString(),
+                            Detail = reader["Detail"].ToString(),
+                            StartTime = (DateTime)reader["StartTime"],
+                            EndTime = (DateTime)reader["EndTime"],
+                            StartPrice = (int)reader["StartPrice"],
+                            NowPrice = bidPrice,
+                            BidUser = bid_user,
+                            DecidePrice = (int)reader["DecidePrice"],
+                            Category = reader["Category"].ToString(),
+                            Value = reader["Value"].ToString(),
+                            PicPath = imagePath,
+                            Finish = (int)reader["Finish"]
+                        });
+                    }
+
+                }
+            }
+            return list[0];
+        }
+
+
+        public List<ItemModel> GetItemDatas()
+        {
+
+            var list = new List<ItemModel>();
+
+            using (var con = new MySqlConnection(connst))
+            {
+                con.Open();
+                var query = @"SELECT *,MAX(bidPrice) FROM items 
+                LEFT OUTER JOIN bids
+                ON items.Id = bids.ItemID
+                Group by Id
+                ; ";
+
+                var command = new MySqlCommand(query, con);
+                var reader = command.ExecuteReader();
+
+                using (var Imgcon = new MySqlConnection(connst))
+                {
+                    while (reader.Read())
                     {
                         Imgcon.Open();
 
@@ -142,6 +329,16 @@ namespace FireWeb.Models
                         var Imgcommand = new MySqlCommand(query, Imgcon);
                         var Imgreader = Imgcommand.ExecuteReader();
                         var imagePath = new List<String>();
+                        var bidPrice = 0;
+
+                        if (reader["MAX(bidPrice)"].ToString() == "")
+                        {
+                            bidPrice = (int)reader["StartPrice"];
+                        }
+                        else
+                        {
+                            bidPrice = (int)reader["MAX(bidPrice)"];
+                        }
 
                         while (Imgreader.Read())
                         {
@@ -158,21 +355,22 @@ namespace FireWeb.Models
                             StartTime = (DateTime)reader["StartTime"],
                             EndTime = (DateTime)reader["EndTime"],
                             StartPrice = (int)reader["StartPrice"],
-                            NowPrice = (int)reader["NowPrice"],
+                            NowPrice = bidPrice,
                             DecidePrice = (int)reader["DecidePrice"],
-                            //FinalPrice = (int)reader["FinalPrice"],
                             Category = reader["Category"].ToString(),
                             Value = reader["Value"].ToString(),
-                            PicPath = imagePath
+                            PicPath = imagePath,
+                            Finish = (int)reader["Finish"]
                         });
                     }
+                    con.Clone();
+
                 }
-                con.Clone();
             }
-            return list[0];
+            return list;
         }
 
-        public List<ItemModel> GetItemDatas()
+        public List<ItemModel> GetItemDatas(String query)
         {
 
             var list = new List<ItemModel>();
@@ -180,10 +378,9 @@ namespace FireWeb.Models
             using (var con = new MySqlConnection(connst))
             {
                 con.Open();
-                var query = "SELECT * FROM items order by PostTime desc;";
                 var command = new MySqlCommand(query, con);
                 var reader = command.ExecuteReader();
-                
+
                 using (var Imgcon = new MySqlConnection(connst))
                 {
                     while (reader.Read())
@@ -216,7 +413,7 @@ namespace FireWeb.Models
                             Category = reader["Category"].ToString(),
                             Value = reader["Value"].ToString(),
                             PicPath = imagePath
-                        });                        
+                        });
                     }
                     con.Clone();
 
@@ -262,6 +459,88 @@ namespace FireWeb.Models
                 con.Clone();
             }
             return list;
+        }
+
+        public List<ItemModel> search(string userID, string column, string keyword, string searchType, bool searchStatus, string searchU, string sortColumn, string sortType)
+        {
+            string[] arr = keyword.Split(' ', '　');
+            var query = "";
+
+            //keyword&&searchType
+            if (keyword == "")
+            {
+                query = $"SELECT* FROM items order by {sortColumn} {sortType}";
+            }
+            else
+            {
+                query = $"SELECT * FROM items WHERE {column} like '%" + arr[0] + "%'";
+                foreach (string key in arr.Skip(1))
+                {
+                    query = query + $" {searchType} {column} like '%{key}%'";
+                }
+
+                query = query + $" order by {sortColumn} {sortType}";
+            }
+
+            List<ItemModel> itemList = new List<ItemModel>();
+            List<String> bidList = new List<String>();
+
+
+            itemList = GetItemDatas(query);
+
+
+
+            if (searchU == "exhibit")
+            {
+                itemList = (List<ItemModel>)itemList.Select(x => x.Owner == userID);
+            }
+            else if (searchU == "bid")
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    con.Open();
+                    var bidquery = $"SELECT * FROM bids WHERE userID = {userID}";
+                    var command = new MySqlCommand(bidquery, con);
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        bidList.Add(reader["itemID"].ToString());
+                    }
+                }
+
+                bidList = (List<String>)bidList.Distinct();
+                var tmpList = new List<ItemModel>();
+
+
+                foreach (string s in bidList)
+                {
+                    tmpList.Add((ItemModel)itemList.Select(x => x.Id == s));
+                }
+
+                itemList = tmpList;
+
+            }
+
+
+            //searchStatus 出品中のみ
+            if (searchStatus == true)
+            {
+                itemList = (List<ItemModel>)itemList.Select(x => x.Finish = 0);
+            }
+
+
+
+            using (var con = new MySqlConnection(connst))
+            {
+                con.Open();
+                var command = new MySqlCommand(query, con);
+                var reader = command.ExecuteReader();
+
+            }
+
+
+
+            return itemList;
         }
 
         public int GetLimitAlart(TimeSpan LimitTime)
