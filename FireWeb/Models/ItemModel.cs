@@ -136,10 +136,15 @@ namespace FireWeb.Models
                     Guid id = Guid.NewGuid();
                     var bidTime = DateTime.Now;
                     con.Open();
+
+                    //koko
+
+
                     MySqlTransaction transaction = con.BeginTransaction(IsolationLevel.ReadCommitted);
                     try
                     {
-                        
+                        //kokodemoii?
+
 
                         var query = "";
 
