@@ -39,7 +39,7 @@ namespace FireWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(string userId , string password, string name, string mail, string remark)
+        public ActionResult Create(string userId, string password, string name, string mail, string remark, bool authBid, bool authExhibid, bool authRegister)
         {
             var sql = new SqlClass();
             bool flg = false;
@@ -65,9 +65,10 @@ namespace FireWeb.Controllers
             {
                 return View();
             }
-            
 
-            sql.AddUserData(userId,password, name, mail, remark);
+
+            sql.AddUserData(userId, password, name, mail, remark);
+            sql.AddUserAuth(userId, authBid, authExhibid, authRegister);
             return RedirectToAction("List", "Home");
         }
 
@@ -82,7 +83,7 @@ namespace FireWeb.Controllers
             ////もうちょっとスマートにしたい
             foreach (DataRow dr in dt.Select())
             {
-                userLists.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()) ,userId = dr.ItemArray[1].ToString(), name = dr.ItemArray[3].ToString(), mail = dr.ItemArray[4].ToString(), remark = dr.ItemArray[5].ToString() });
+                userLists.Add(new LoginModel { id = int.Parse(dr.ItemArray[0].ToString()), userId = dr.ItemArray[1].ToString(), name = dr.ItemArray[3].ToString(), mail = dr.ItemArray[4].ToString(), remark = dr.ItemArray[5].ToString() });
             }
 
             var groups = userLists
@@ -111,10 +112,10 @@ namespace FireWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(int id, string userId,string password, string name, string mail, string remark)
+        public ActionResult Edit(int id, string userId, string password, string name, string mail, string remark)
         {
             var sql = new SqlClass();
-            sql.UserDataUpdate(id, userId , password, name, mail, remark);
+            sql.UserDataUpdate(id, userId, password, name, mail, remark);
             return RedirectToAction("List", "Home");
         }
 
@@ -174,26 +175,53 @@ namespace FireWeb.Controllers
 
 
         [HttpPost]
-        public ActionResult Login(string name, string password)
+        public ActionResult Login(string id, string password)
         {
             var sql = new SqlClass();
-            var auth = sql.LoginAuth(password, name);
+            var auth = sql.LoginAuth(password, id);
 
-            if (auth == true)
+            if (auth.Count() != 0)
             {
-                return RedirectToAction("List", "Home");
+                Session["loginAuth"] = auth;
+                Session["userName"] = sql.GetUserData(int.Parse(auth[0]))[0].name;
+                Session["AuthExhibid"] = false;
+                Session["AuthBid"] = false;
+                Session["AuthRegister"] = false;
+                var list = sql.GetUserAuth(auth[1]);
+                
 
+                foreach(int i in list)
+                {
+                    if(i == 1)
+                    {
+                        Session["AuthBid"] = true;
+                    }
+                    if(i == 2)
+                    {
+                        Session["AuthExhibid"] = true;
+                    }
+                    if (i == 3)
+                    {
+                        Session["AuthRegister"] = true;
+                    }
+                }
+                return RedirectToAction("ItemList", "Auction");
             }
             else
             {
                 ViewBag.LoginErrorMessage = "ユーザー名かパスワードが違います";
-
             }
             return View();
         }
 
+        public ActionResult Logout()
+        {
+            Session.Remove("loginAuth");
+            return RedirectToAction("Index", "Home");
+        }
 
-        
+
+
 
         public ActionResult CsvExport()
         {
@@ -208,7 +236,7 @@ namespace FireWeb.Controllers
             var client = new WebClient();
             client.DownloadFile(url, filePath + ".csv");
 
-            return RedirectToAction("List","Home");
+            return RedirectToAction("List", "Home");
 
         }
 
@@ -324,29 +352,94 @@ namespace FireWeb.Controllers
             return dt;
         }
 
-        public bool LoginAuth(string password, string name)
+        public List<string> LoginAuth(string password, string id)
         {
             string pass = MySqlHelper.EscapeString(password);
-            string rname = MySqlHelper.EscapeString(name);
-            var query = "select * from user where name = '" + pass + "' AND password = '" + rname + "';";
+            string Id = MySqlHelper.EscapeString(id);
+            var query = "select * from user where userId = '" + Id + "' AND password = '" + pass + "';";
+            var list = new List<string>();
 
-            bool flg = false;
             try
             {
                 using (var con = new MySqlConnection(connst))
                 {
+                    con.Open();
                     var command = new MySqlCommand(query, con);
-                    if (command.ExecuteScalar() != null)
+                    var reader = command.ExecuteReader();
+
+                    while (reader.Read() == true)
                     {
-                        flg = true;
+                        list.Add(reader["id"].ToString());
+                        list.Add(reader["userId"].ToString());
+                        list.Add(reader["name"].ToString());
+                        list.Add(reader["password"].ToString());
+                        list.Add(reader["mail"].ToString());
+                        list.Add(reader["remark"].ToString());
                     }
+
                 }
             }
             catch
             {
 
             }
-            return flg;
+            return list;
+        }
+
+        public void AddUserAuth(string userId, bool authBid, bool authExhibid, bool authRegister)
+        {
+
+            if (authBid == true)
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    con.Open();
+                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',1);";
+                    var command = new MySqlCommand(query, con);
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            if (authExhibid == true)
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    con.Open();
+                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',2);";
+                    var command = new MySqlCommand(query, con);
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            if (authRegister == true)
+            {
+                using (var con = new MySqlConnection(connst))
+                {
+                    con.Open();
+                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',3);";
+                    var command = new MySqlCommand(query, con);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public List<int> GetUserAuth(string userid)
+        {
+            var list = new List<int>();
+
+            using (var con = new MySqlConnection(connst))
+            {
+                con.Open();
+                var query = $@"SELECT * FROM auth WHERE userId = '{userid}';";
+                var command = new MySqlCommand(query, con);
+                var reader = command.ExecuteReader();
+
+                while (reader.Read() == true)
+                {
+                    list.Add(int.Parse(reader["auth"].ToString()));
+                }
+            }
+            return list;
         }
 
 
@@ -362,12 +455,12 @@ namespace FireWeb.Controllers
                 {
                     con.Open();
                     var command = new MySqlCommand(query, con);
-                    var reader = command.ExecuteReader();                  
+                    var reader = command.ExecuteReader();
                     if (reader.Read() != true)
                     {
                         flg = true;
                     }
-                    con.Clone();
+                    con.Close();
                 }
             }
             catch (Exception ex)
@@ -380,13 +473,13 @@ namespace FireWeb.Controllers
         public bool IsCheckPassword(string password)
         {
             bool flg = false;
-            bool result = Regex.IsMatch(password , @"^ (?=.*[0 - 9])(?=.*[a - z])(?=.*[A - Z])[0 - 9a - zA - Z\-]{ 6,}$");
+            bool result = Regex.IsMatch(password, @"^ (?=.*[0 - 9])(?=.*[a - z])(?=.*[A - Z])[0 - 9a - zA - Z\-]{ 6,}$");
             return flg;
         }
 
 
 
-        public void AddUserData(string userId ,string password, string name, string mail, string remark)
+        public void AddUserData(string userId, string password, string name, string mail, string remark)
         {
             string msg = "";
             using (var con = new MySqlConnection(connst))
@@ -398,10 +491,10 @@ namespace FireWeb.Controllers
                 remark = MySqlHelper.EscapeString(remark);
 
                 con.Open();
-                var query = "INSERT INTO user (userId,password,name,mail,remark) VALUES ( '" + userId + "','" +password + "', '" + name + "',  '" + mail + "', '" + remark + "');";
+                var query = "INSERT INTO user (userId,password,name,mail,remark) VALUES ( '" + userId + "','" + password + "', '" + name + "',  '" + mail + "', '" + remark + "');";
                 var command = new MySqlCommand(query, con);
                 command.ExecuteNonQuery();
-                con.Clone();
+                con.Close();
             }
 
         }
@@ -420,7 +513,7 @@ namespace FireWeb.Controllers
                 var query = "UPDATE user SET userId = '" + userId + "', password = '" + password + "', name = '" + name + "', mail = '" + mail + "', remark = '" + remark + "' WHERE id = " + id.ToString() + ";";
                 var command = new MySqlCommand(query, con);
                 command.ExecuteNonQuery();
-                con.Clone();
+                con.Close();
             }
         }
 
@@ -442,7 +535,7 @@ namespace FireWeb.Controllers
                     list.Add(new LoginModel { id = int.Parse(reader["id"].ToString()), userId = reader["userId"].ToString(), name = reader["name"].ToString(), password = reader["password"].ToString(), mail = reader["mail"].ToString(), remark = reader["remark"].ToString() });
 
                 }
-                con.Clone();
+                con.Close();
             }
             return list;
         }
@@ -467,14 +560,14 @@ namespace FireWeb.Controllers
             return true;
         }
 
-        
+
 
 
     }
 
 
     public class CsvReader : IDisposable
-    {        
+    {
         private StreamReader stream = null;
         private bool isQuotedField = false;
         public CsvReader(string path) :

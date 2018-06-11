@@ -6,11 +6,12 @@
     <div class="modal_overlay">
         <label for="trigger" class="modal_trigger"></label>
         <div class="modal_content">
+            <div class=" modal-header">
+                <h1 class="modal-title" id="modal-label">入札設定</h1>
+            </div>
             <div class="modal-body">
                 <form id="bid" action="/Auction/Did" enctype="multipart/form-data" method="post">
                     <div class="col-md-8 col-md-offset-1">
-                        <h1 style="font-weight:600">入札設定</h1>
-                        <br>
                         <h3 style="font-weight:600">現在価格</h3>
                         <h3>@Model.NowPrice<span style="font-size:20px;margin:60px 0 0 10px">円 (税・送料込み)</span></h3>
                         <h3 style="font-weight:600">即決価格</h3>
@@ -130,13 +131,20 @@
         <div class="row" style="text-align: center;vertical-align: middle;">
             <div class="now_price" style="text-align: center;vertical-align: middle;margin-top:50px">
                 <span style="text-align: center;vertical-align: middle;font-size:30px;">【現在価格】</span>
-                <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@Model.NowPrice</span><span style="vertical-align:bottom" ;>(税・送料込み)</span>
+                <span style="text-align: center;vertical-align: middle;font-size:60px;font-weight:600">@Model.NowPrice</span><span style="vertical-align:bottom" ;>(税・送料込み) @Model.BidUser</span>
             </div>
         </div>
         <div class="row" style="height:auto">
             <div class="col-md-10 col-md-offset-1">
                 <div class="square_btn">
-                    <label for="trigger" class="open_button" style="width:600px;margin:50px 0 80px 80px;"><font size="6" color="#fff">入札</font></label>
+                    @if ((bool)Session["AuthBid"] == false)
+                    {
+                        <button disabled class="open_button" style="width:600px;margin:50px 0 80px 80px;background-color:#808080"><font size="6" color="#fff">入札する権限がありません</font></button>
+                    }
+                    else
+                    {
+                        <label for="trigger" class="open_button" style="width:600px;margin:50px 0 80px 80px;"><font size="6" color="#fff">入札</font></label>
+                    }
                 </div>
             </div>
         </div>

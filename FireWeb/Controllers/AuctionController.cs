@@ -16,7 +16,13 @@ namespace FireWeb.Controllers
 
         public ActionResult Exhibit()
         {
-            return View();
+            if ((bool)Session["AuthExhibid"] == true){
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("ItemList");
+            }
         }
 
         public ActionResult Preview()
@@ -35,7 +41,8 @@ namespace FireWeb.Controllers
 
             //var ImgList = item.WrapToImg(img1, img2, img3, img4);
             //var ByteList = item.ImageToByteArray(ImgList);
-
+            var owner = (List<string>)Session["loginAuth"];
+            item.Owner = owner[1];
             item.Title = Title;
             item.Detail = Detail;
             item.StartPrice = StartPrice;
@@ -77,15 +84,10 @@ namespace FireWeb.Controllers
             return View(model);
         }
 
-
-
         public ActionResult ItemList()
         {
-
-            var list = new List<ItemModel>();
             var model = new ItemModel();
-
-            list = model.GetItemDatas();
+            var list = model.GetItemDatas();
             model.AddLimitAlarts(list);
 
             return View(list);
@@ -109,8 +111,8 @@ namespace FireWeb.Controllers
             try
             {
                 var model = new ItemModel();
-                model.AddDid(ItemID, bidPrice,NowPrice,DecidePrice);
-
+                model.AddDid(ItemID, bidPrice,NowPrice,DecidePrice,Session["userName"].ToString());
+             
                 return RedirectToAction("ItemDetail/" + ItemID);
             }
             catch
