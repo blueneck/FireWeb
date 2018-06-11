@@ -441,6 +441,7 @@ namespace FireWeb.Models
                     con.Open();
                     var cmdooo = new MySqlCommand(query, con);
                     
+                    //この下のreaderでもうリーダー開いてるから閉じてから開いてエラー
                     using (MySqlDataReader readerrr = cmdooo.ExecuteReader())
                     {
                         while (readerrr.Read())
