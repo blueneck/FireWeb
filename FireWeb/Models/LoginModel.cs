@@ -13,6 +13,8 @@ namespace FireWeb.Models
         public string name { get; set; }
         public string mail { get; set; }
         public string remark { get; set; }
-       
+        public string authBid { get; set; }
+        public string authExhibid { get; set; }
+        public string authRegister { get; set; }
     }
 }

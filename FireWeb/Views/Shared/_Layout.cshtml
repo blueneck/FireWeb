@@ -5,13 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Fire Web Aplication</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/v4.0.0/build/css/bootstrap-datetimepicker.css">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+    <script src="moment-ja.js"></script>
+    <script src="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/v4.0.0/src/js/bootstrap-datetimepicker.js"></script>
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top" style="background-color:#fff;">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -22,11 +28,32 @@
                 @Html.ActionLink("炎のトレーニング", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav" style="color:#000">
-                    <li>@Html.ActionLink("ホーム", "Index", "Home")</li>
-                    <li>@Html.ActionLink("ログイン", "Login", "Home")</li>
-                    <li>@Html.ActionLink("新規ユーザー登録", "Create", "Home")</li>
-                    <li>@Html.ActionLink("一覧", "List", "Home")</li>
+                <ul class="nav navbar-nav" >
+                    @{
+                        if (Session["loginAuth"] == null)
+                        {
+                            <li>@Html.ActionLink("ログイン", "Login", "Home")</li>
+                            <li>@Html.ActionLink("新規ユーザー登録", "Create", "Home")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("オークション", "ItemList", "Auction")</li>
+
+                            if ((bool)Session["AuthExhibid"] == true)
+                            {
+                                <li>@Html.ActionLink("出品", "Exhibit", "Auction")</li>
+                            }
+
+
+                            if ((bool)Session["AuthRegister"] == true)
+                            {
+                                <li>@Html.ActionLink("ユーザー管理", "List", "Home")</li>
+                            }
+                            <li>@Html.ActionLink("ログアウト", "Logout", "Home")</li>
+                        }
+
+
+                    }
                 </ul>
             </div>
         </div>
@@ -39,7 +66,7 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
