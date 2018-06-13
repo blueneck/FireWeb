@@ -69,7 +69,33 @@ namespace FireWeb.Controllers
 
             sql.AddUserData(userId, password, name, mail, remark);
             sql.AddUserAuth(userId, authBid, authExhibid, authRegister);
-            return RedirectToAction("List", "Home");
+            var auth = sql.LoginAuth(password, userId);
+
+            Session["loginAuth"] = auth;
+            Session["userName"] = sql.GetUserData(int.Parse(auth[0]))[0].name;
+            Session["AuthExhibid"] = false;
+            Session["AuthBid"] = false;
+            Session["AuthRegister"] = false;
+            var list = sql.GetUserAuth(auth[1]);
+
+
+            foreach (int i in list)
+            {
+                if (i == 1)
+                {
+                    Session["AuthBid"] = true;
+                }
+                if (i == 2)
+                {
+                    Session["AuthExhibid"] = true;
+                }
+                if (i == 3)
+                {
+                    Session["AuthRegister"] = true;
+                }
+            }
+
+            return RedirectToAction("ItemList", "Auction");
         }
 
         public ActionResult List(int page = 1)
@@ -102,7 +128,6 @@ namespace FireWeb.Controllers
             var userList = Search(column, keyword, searchType);
             return View(userList);
         }
-
 
         public ActionResult Edit(int id)
         {
@@ -188,15 +213,15 @@ namespace FireWeb.Controllers
                 Session["AuthBid"] = false;
                 Session["AuthRegister"] = false;
                 var list = sql.GetUserAuth(auth[1]);
-                
 
-                foreach(int i in list)
+
+                foreach (int i in list)
                 {
-                    if(i == 1)
+                    if (i == 1)
                     {
                         Session["AuthBid"] = true;
                     }
-                    if(i == 2)
+                    if (i == 2)
                     {
                         Session["AuthExhibid"] = true;
                     }
@@ -365,16 +390,17 @@ namespace FireWeb.Controllers
                 {
                     con.Open();
                     var command = new MySqlCommand(query, con);
-                    var reader = command.ExecuteReader();
-
-                    while (reader.Read() == true)
+                    using (var reader = command.ExecuteReader())
                     {
-                        list.Add(reader["id"].ToString());
-                        list.Add(reader["userId"].ToString());
-                        list.Add(reader["name"].ToString());
-                        list.Add(reader["password"].ToString());
-                        list.Add(reader["mail"].ToString());
-                        list.Add(reader["remark"].ToString());
+                        while (reader.Read() == true)
+                        {
+                            list.Add(reader["id"].ToString());
+                            list.Add(reader["userId"].ToString());
+                            list.Add(reader["name"].ToString());
+                            list.Add(reader["password"].ToString());
+                            list.Add(reader["mail"].ToString());
+                            list.Add(reader["remark"].ToString());
+                        }
                     }
 
                 }
@@ -388,36 +414,26 @@ namespace FireWeb.Controllers
 
         public void AddUserAuth(string userId, bool authBid, bool authExhibid, bool authRegister)
         {
-
-            if (authBid == true)
+            using (var con = new MySqlConnection(connst))
             {
-                using (var con = new MySqlConnection(connst))
+                con.Open();
+                var command = new MySqlCommand("",con);
+
+                if (authBid == true)
                 {
-                    con.Open();
-                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',1);";
-                    var command = new MySqlCommand(query, con);
+                    command.CommandText = $@"INSERT INTO authorize (userId,auth) VALUES ( '{userId}',1);";
                     command.ExecuteNonQuery();
                 }
-            }
 
-            if (authExhibid == true)
-            {
-                using (var con = new MySqlConnection(connst))
+                if (authExhibid == true)
                 {
-                    con.Open();
-                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',2);";
-                    var command = new MySqlCommand(query, con);
+                    command.CommandText = $@"INSERT INTO authorize (userId,auth) VALUES ( '{userId}',2);";
                     command.ExecuteNonQuery();
                 }
-            }
 
-            if (authRegister == true)
-            {
-                using (var con = new MySqlConnection(connst))
+                if (authRegister == true)
                 {
-                    con.Open();
-                    var query = $@"INSERT INTO auth (userId,auth) VALUES ( '{userId}',3);";
-                    var command = new MySqlCommand(query, con);
+                    command.CommandText = $@"INSERT INTO authorize (userId,auth) VALUES ( '{userId}',3);";
                     command.ExecuteNonQuery();
                 }
             }
@@ -430,7 +446,7 @@ namespace FireWeb.Controllers
             using (var con = new MySqlConnection(connst))
             {
                 con.Open();
-                var query = $@"SELECT * FROM auth WHERE userId = '{userid}';";
+                var query = $@"SELECT * FROM authorize WHERE userId = '{userid}';";
                 var command = new MySqlCommand(query, con);
                 var reader = command.ExecuteReader();
 
@@ -441,7 +457,6 @@ namespace FireWeb.Controllers
             }
             return list;
         }
-
 
         public bool IsCheckUserID(string userId)
         {
@@ -477,11 +492,8 @@ namespace FireWeb.Controllers
             return flg;
         }
 
-
-
         public void AddUserData(string userId, string password, string name, string mail, string remark)
         {
-            string msg = "";
             using (var con = new MySqlConnection(connst))
             {
                 userId = MySqlHelper.EscapeString(userId);
@@ -494,9 +506,7 @@ namespace FireWeb.Controllers
                 var query = "INSERT INTO user (userId,password,name,mail,remark) VALUES ( '" + userId + "','" + password + "', '" + name + "',  '" + mail + "', '" + remark + "');";
                 var command = new MySqlCommand(query, con);
                 command.ExecuteNonQuery();
-                con.Close();
             }
-
         }
 
         public void UserDataUpdate(int id, string userId, string password, string name, string mail, string remark)
@@ -516,8 +526,6 @@ namespace FireWeb.Controllers
                 con.Close();
             }
         }
-
-
 
         public List<LoginModel> GetUserData(int id)
         {
@@ -559,10 +567,6 @@ namespace FireWeb.Controllers
 
             return true;
         }
-
-
-
-
     }
 
 

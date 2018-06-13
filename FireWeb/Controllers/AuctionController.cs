@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
 using FireWeb.Models;
@@ -16,7 +17,7 @@ namespace FireWeb.Controllers
 
         public ActionResult Exhibit()
         {
-            if ((bool)Session["AuthExhibid"] == true){
+            if ((bool)Session["AuthExhibid"]){
                 return View();
             }
             else
@@ -110,9 +111,11 @@ namespace FireWeb.Controllers
         {
             try
             {
-                var model = new ItemModel();
-                model.AddDid(ItemID, bidPrice,NowPrice,DecidePrice,Session["userName"].ToString());
-             
+                using (var tScope = new TransactionScope())
+                {
+                    var model = new ItemModel();
+                    model.AddDid(ItemID, bidPrice, NowPrice, DecidePrice, Session["userName"].ToString());
+                }
                 return RedirectToAction("ItemDetail/" + ItemID);
             }
             catch

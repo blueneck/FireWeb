@@ -107,8 +107,6 @@ namespace FireWeb.Models
 
         public void AddDid(String ItemID, int bidPrice, int NowPrice, int DecidePrice, string owner)
         {
-            int bidUnit = 100;
-
             if (NowPrice > bidPrice)
             {
                 return;
@@ -118,35 +116,28 @@ namespace FireWeb.Models
                 using (var con = new MySqlConnection(connst))
                 {
                     var bidTime = DateTime.Now;
+                    var query = "";
+
                     con.Open();
-                    MySqlTransaction transaction = con.BeginTransaction(IsolationLevel.ReadCommitted);
-                    try
+                    var cmd = new MySqlCommand(query, con);
+                    cmd.CommandText = $@"INSERT INTO bids  (
+                                                itemID,bid_user,bid_price,bid_time
+                                                )
+                                                VALUES(
+                                                @id,@bid_user,@bid_price,@bid_time
+                                                )";
+
+                    cmd.Parameters.Add(new MySqlParameter("@id", ItemID));
+                    cmd.Parameters.Add(new MySqlParameter("@bid_user", owner));
+                    cmd.Parameters.Add(new MySqlParameter("@bid_price", bidPrice));
+                    cmd.Parameters.Add(new MySqlParameter("@bid_time", bidTime));
+                    cmd.ExecuteNonQuery();
+
+                    if (bidPrice >= DecidePrice)
                     {
+                        var cmdfin = new MySqlCommand(query, con);
 
-
-                        var query = "";
-
-                        var cmd = new MySqlCommand(query, con);
-
-                        cmd.CommandText = $@"INSERT INTO bids  (
-                    itemID,bid_user,bid_price,bid_time
-                    )
-                    VALUES(
-                    @id,@bid_user,@bid_price,@bid_time
-                    )";
-
-                        cmd.Parameters.Add(new MySqlParameter("@id", ItemID));
-                        cmd.Parameters.Add(new MySqlParameter("@bid_user", owner));
-                        cmd.Parameters.Add(new MySqlParameter("@bid_price", bidPrice));
-                        cmd.Parameters.Add(new MySqlParameter("@bid_time", bidTime));
-
-                        cmd.ExecuteNonQuery();
-
-                        if (bidPrice >= DecidePrice)
-                        {
-                            var cmdfin = new MySqlCommand(query, con);
-
-                            cmd.CommandText = $@"INSERT INTO items  (
+                        cmd.CommandText = $@"INSERT INTO items  (
                                                     Finish
                                                     )
                                                     VALUES(
@@ -154,40 +145,32 @@ namespace FireWeb.Models
                                                     )
                                                     WHERE Id = {ItemID}
                                                     ";
-                            cmd.ExecuteNonQuery();
-                        }
+                        cmd.ExecuteNonQuery();
                     }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                    }
-
-                    BidCal(ItemID, bidPrice, NowPrice, DecidePrice, owner);
-
-                   
-
                 }
+
+                BidCal(ItemID, bidPrice, NowPrice, DecidePrice, owner);
+
             }
         }
 
         public void BidCal(string id, int bidPrice, int NowPrice, int DecidePrice, string newuser)
         {
-
             using (var con = new MySqlConnection(connst))
             {
                 var bidTime = DateTime.Now;
-                con.Open();
-                MySqlTransaction transaction = con.BeginTransaction(IsolationLevel.ReadCommitted);
-                var query = "";
-                var bid = new List<String>();
+                var bid_unit = 100;
+                var bidder = "";
                 var result = 0;
-                var bider = "";
                 var finish = 0;
+                var ds = new DataSet();
+                var dsd = new DataSet();
+                con.Open();
+                var cmdo = new MySqlDataAdapter(); 
+                cmdo.SelectCommand = new MySqlCommand("", con);
 
-                var cmd = new MySqlCommand(query, con);
-
-                cmd.CommandText = $@"SELECT * FROM bids WHERE ItemID = '{id}' order by bid_price desc limit 1";
-                var reader = cmd.ExecuteReader();
+                cmdo.SelectCommand.CommandText = $@"SELECT * FROM bids WHERE ItemID = '{id}' order by bid_price desc limit 1";
+                cmdo.Fill(ds);
 
                 var flg = CheckBid(NowPrice, DecidePrice, bidPrice);
 
@@ -196,61 +179,48 @@ namespace FireWeb.Models
                 {
                     finish = 1;
                     result = bidPrice;
-                    bider = newuser;
+                    bidder = newuser;
                 }
 
-
-                if (reader.Read())
+                if (ds.Tables.Count == 0)
                 {
-                    //２回目以降の入札なので再計算
-                    bid.Add(reader["bid_user"].ToString());
-                    bid.Add(reader["bid_price"].ToString());
-
-                    if (bidPrice == int.Parse(bid[1]))
-                    {
-                        result = int.Parse(bid[1]);
-                        bider = bid[0];
-                    }
-                    else if (bidPrice > int.Parse(bid[1]))
-                    {
-                        result = int.Parse(bid[1]) + 100;
-                        bider = newuser;
-                    }
-                    else if (bidPrice < int.Parse(bid[1]))
-                    {
-                        result = bidPrice + 100;
-                        bider = bid[0];
-                    }
+                    //初入札
+                    result = NowPrice + bid_unit;
+                    bidder = newuser;
                 }
                 else
                 {
-                    //初入札
-                    result = NowPrice + 100;
-                    bider = newuser;
+                    //２回目以降の入札なので再計算
+                    var nowMaxPrice = int.Parse(ds.Tables[0].Rows[2][0].ToString());
+                    var nowbidder = ds.Tables[0].Rows[1][0].ToString();
+
+                    if (bidPrice == nowMaxPrice)
+                    {
+                        result = nowMaxPrice;
+                        bidder = nowbidder;
+                    }
+                    else if (bidPrice > nowMaxPrice)
+                    {
+                        result = nowMaxPrice + bid_unit;
+                        bidder = newuser;
+                    }
+                    else if (bidPrice < nowMaxPrice)
+                    {
+                        result = bidPrice + bid_unit;
+                        bidder = nowbidder;
+                    }
                 }
 
-                reader.Close();
+                var cmd = new MySqlCommand("", con);
 
-                try
-                {
-                    query = "";
-                    cmd = new MySqlCommand(query, con);
-
-                    cmd.CommandText = $@"UPDATE items SET
+                cmd.CommandText = $@"UPDATE items SET
                                                         NowPrice = @NowPrice,bid_user = @bid_user,Finish =@Finish
                                                         WHERE Id = '{id}'
                                                         ";
-                    cmd.Parameters.Add(new MySqlParameter("@NowPrice", result));
-                    cmd.Parameters.Add(new MySqlParameter("@bid_user", bider));
-                    cmd.Parameters.Add(new MySqlParameter("@Finish", finish));
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                }
-
+                cmd.Parameters.Add(new MySqlParameter("@NowPrice", result));
+                cmd.Parameters.Add(new MySqlParameter("@bid_user", bidder));
+                cmd.Parameters.Add(new MySqlParameter("@Finish", finish));
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -440,7 +410,7 @@ namespace FireWeb.Models
                     var tmp_list = new List<ItemModel>();
                     con.Open();
                     var cmdooo = new MySqlCommand(query, con);
-                    
+
                     //この下のreaderでもうリーダー開いてるから閉じてから開いてエラー
                     using (MySqlDataReader readerrr = cmdooo.ExecuteReader())
                     {

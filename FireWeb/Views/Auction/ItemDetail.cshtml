@@ -123,7 +123,7 @@
                     </tr>
                     <tr style="font-size:40px;font-weight:600">
                         <td style="vertical-align:middle">@ViewBag.Count</td>
-                        <td style="vertical-align:middle"><FORM name="tbox1"><INPUT name="dspday" type="text" style="border:0px;font-size:38px;width:200px;text-align:center"></FORM></td>
+                        <td style="vertical-align:middle">@*<FORM name="tbox1"><INPUT name="dspday" type="text" style="border:0px;font-size:38px;width:200px;text-align:center">*@</FORM></td>
                     </tr>
                 </table>
             </div>
@@ -163,10 +163,10 @@
 
 
 
-@*<script>
+<script>
         function countdown(y, m, d, h, m, s) {
             year = y
-            mon = m - 1
+            mon = m -2
             day = d
             xday = new Date(year, mon, day, h, m, s);
             nowday = new Date();
@@ -203,11 +203,11 @@
             return x
         }
     </script>
-    <script type="text/javascript">
+    @*<script type="text/javascript">
         window.onload = showCountdown();
         function showCountdown() {
             document.tbox1.dspday.value = countdown(@Model.EndTime.Year , @Model.EndTime.Month , @Model.EndTime.Day, @Model.EndTime.Hour ,@Model.EndTime.Minute ,@Model.EndTime.Second);
-            setInterval("showCountdown()", 1000);
+            setInterval("showCountdown()", 5000);
         }
     </script>*@
 
